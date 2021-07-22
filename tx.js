@@ -1,3 +1,10 @@
+/**
+ * This file is used to pull transactions from the blockchain.
+ * Transactions can be filtered based on transaction type. 
+ * all transactions are then stored in a file locally.
+ */
+
+
 const fs = require('fs')
 const path = require('path')
 const Web3 = require('web3')
