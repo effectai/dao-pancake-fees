@@ -3,7 +3,7 @@ const path = require('path')
 const Web3 = require('web3')
 const papaparse = require('papaparse')
 const BN = Web3.utils.BN
-
+const decimals = 18 // wbnb and efx have 18 decimals
 const cleanJson = JSON.parse(fs.readFileSync(path.join(__dirname, 'clean_pancake_swap_events.json'), 'utf8'))
 
 const pcsRouterContract = '0x10ED43C718714eb63d5aA57B78B54704E256024E'
@@ -28,6 +28,9 @@ const calculateFee = (tx) => {
         swapTo: null, // EFX or WBNB
         swapAmountFrom: null,
         swapAmountTo: null,
+        totalFeeFormatted: null,
+        efxFeesFormatted: null,
+        wbnbFeesFormatted: null,
     }
 
     if (tx.returnValues.amount0In != "0") {
@@ -55,6 +58,13 @@ const calculateFee = (tx) => {
     txFeeResponse.lpFee = lpFee * txFeeResponse.swapAmountFrom
     txFeeResponse.pcstFee = pcstFee * txFeeResponse.swapAmountFrom
     txFeeResponse.cakeFee = cakeFee * txFeeResponse.swapAmountFrom
+    txFeeResponse.totalFeeFormatted = Web3.utils.fromWei(new BN(txFeeResponse.totalFee.toString()), 'ether')
+
+    if (txFeeResponse.swapFrom === 'WBNB') {
+        txFeeResponse.wbnbFeesFormatted = txFeeResponse.totalFeeFormatted
+    } else {
+        txFeeResponse.efxFeesFormatted = txFeeResponse.totalFeeFormatted
+    }
 
     return txFeeResponse
 }
@@ -62,6 +72,8 @@ const calculateFee = (tx) => {
 const calculatedFees = cleanJson.map(tx => calculateFee(tx))
 console.log(calculatedFees)
 
+const csv = papaparse.unparse(calculatedFees)
+fs.writeFileSync(path.join(__dirname, 'calculated_fees.csv'), csv)
 
 
 

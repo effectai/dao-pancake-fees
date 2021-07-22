@@ -1,7 +1,13 @@
 const fs = require('fs')
 const path = require('path')
 const Web3 = require('web3')
-const BN = Web3.utils.BN
+
+/**
+ * These are the endpoints that are available to us right now. 
+ * At the moment the fastest endpoint is the moralis endpoint.
+ * there is the useMoralis endpoint, which is a server. 
+ * But it was not clear how to authenticate to it when creating a connection.
+ */
 
 // const bscRpcEndpoint = 'https://bsc-dataseed.binance.org/' // common node
 // const bscRpcEndpoint = 'https://wandering-small-waterfall.bsc.quiknode.pro/f925c94396088afa84b4eea736be8b843a595f6c/' // Quiknode

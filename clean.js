@@ -10,20 +10,9 @@ const pefxToken = '0xc51ef828319b131b595b7ec4b28210ecf4d05ad0'
 const wbnbToken = '0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c'
 const pancakeSwapEFXContract = '0xaf1db0c88a2bd295f8edcc8c73f9eb8bcee6fa8a'
 
-
-const cleanJson = () => {
-    let eventArray = []
-    for (const arr of swapJson) {
-        arr.forEach(event => {
-            eventArray.push(event)
-        })
-    }
-}
-
 const clean = () => {
     let eventArray = []
     Array.from(swapJson).forEach(array => {
-        console.log(array)
         if(array != null){            
             Array.from(array).forEach(event => {
                 eventArray.push(event)

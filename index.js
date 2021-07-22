@@ -1,3 +1,9 @@
+/**
+ * This file is not useful.
+ * Streamingfast has decided to drop support for this product and do not guarantee that it will be supported in the future.
+ * So it was decided that this program will not be further developerd.
+ */
+
 const path = require("path")
 const grpc = require("grpc")
 const protoLoader = require("@grpc/proto-loader")
