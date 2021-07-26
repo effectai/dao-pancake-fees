@@ -4,16 +4,16 @@
   "main": "index.js",
   "license": "Apache 2.0",
   "dependencies": {
-    "@dfuse/client": "^0.3.20",
-    "@grpc/proto-loader": "^0.6.1",
-    "grpc": "^1.24.7",
+    "chalk": "^4.1.1",
+    "cli-progress": "^3.9.0",
+    "ipfs-core": "^0.8.0",
+    "jspdf": "^2.3.1",
     "node-fetch": "^2.6.1",
-    "protobufjs": "^6.10.2",
+    "papaparse": "^5.3.1",
     "web3": "^1.4.0",
-    "ws": "^7.4.5"
+    "yargs": "^17.0.1"
   },
   "devDependencies": {
-    "papaparse": "^5.3.1",
     "prettier": "^2.2.1"
   }
 }
