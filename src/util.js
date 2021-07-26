@@ -49,12 +49,72 @@ const createHTML = (data) => {
         <![endif]-->
         </head>
         <body>
-        ${JSON.stringify(data, null, 2)}
+        <table>
+            <thead>
+                <tr>
+                    <th>DAO Pancake Liquidity Fees</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Total Swaps</td>
+                    <td>${data.totalSwaps}</td>
+                </tr>
+                <tr>
+                    <td>Total EFX Swaps</td>
+                    <td>${data.totalEfxSwaps}</td>
+                <tr>
+                    <td>EFX%</td>
+                    <td>${data.efxPercentage}%</td>            
+                </tr>
+                <tr>
+                    <td>Total WBNB Swaps</td>
+                    <td>${data.totalWbnbSwaps}</td>
+                </tr>
+                <tr>
+                    <td>WBNB%</td>
+                    <td>${data.wbnbPercentage}%</td>
+                </tr>
+                <tr>
+                    <td>Total EFX Fees</td>
+                    <td>${data.totalEFXFees}</td>
+                </tr>
+                <tr>
+                    <td>Total WBNB Fees</td>
+                    <td>${data.totalWBNBFees}</td>
+                </tr>
+                <tr>
+                    <td>Avg EFX Fee/Swap</td>
+                    <td>${data.averageEFXFeesPerSwap}</td>
+                </tr>
+                <tr>
+                    <td>Avg WBNB Fee/Swap</td>
+                    <td>${data.averageWBNBFeesPerSwap}</td>
+                </tr>
+                <tr>
+                    <td>Min Swap Fee EFX</td>
+                    <td>${data.minSwapEfx}</td>
+                </tr>
+                <tr>
+                    <td>Max Swap Fee WBNB</td>
+                    <td>${data.maxSwapEfx}</td>
+                </tr>
+                <tr>
+                    <td>Min Swap Fee WBNB</td>
+                    <td>${data.minSwapWBNB}</td>
+                </tr>
+                <tr>
+                    <td>Max Swap Fee WBN</td>
+                    <td>${data.maxSwapWBNB}</td>
+                </tr>
+
+            </tbody>
+        </table>
         <script src="js/scripts.js"></script>
         </body>
         </html>
     `
-    fs.writeFileSync(path.join(__dirname, `${htmlFileName}`), html)
+    fs.writeFileSync(path.join(__dirname, `../${htmlFileName}`), html)
     console.log(`📄 Saved to ${htmlFileName}`)
 }
 
