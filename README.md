@@ -1,5 +1,33 @@
 # Dao_Pancake_Fee
 
+```
+$ node index.js --help
+ _____  __  __           _     _   _      _                      _
+| ____|/ _|/ _| ___  ___| |_  | \ | | ___| |___      _____  _ __| | __
+|  _| | |_| |_ / _ \/ __| __| |  \| |/ _ \ __\ \ /\ / / _ \| '__| |/ /
+| |___|  _|  _|  __/ (__| |_  | |\  |  __/ |_ \ V  V / (_) | |  |   <
+|_____|_| |_|  \___|\___|\__| |_| \_|\___|\__| \_/\_/ \___/|_|  |_|\_\ ✨✨✨
+
+Effect Network: Pancake Liquidity Pool Fee Calculator 💸💸💸
+Usage: index.js [options]
+
+
+Options:
+  -s, --start    Start block number                          [default: 7580000]
+  -e, --end      End block number                           [default: "latest"]
+  -r, --rpc      BSC RPC endpoint[default: "https://bsc-dataseed.binance.org/"]
+  -f, --file     Save file to disk                    [boolean] [default: true]
+  -m, --html     Create HTML report                                   [boolean]
+  -p, --pipe     Pipe to stdout                                       [boolean]
+  -j, --json     Output as json                       [boolean] [default: true]
+  -c, --csv      Output as csv                                        [boolean]
+  -h, --help     Show help                                            [boolean]
+  -v, --version  Show version number                                  [boolean]
+
+ 🌴
+```
+---
+
 # 📓 Why?
 This tool is used to get the pancakeSwap fees for Effect Network.
 
@@ -8,8 +36,8 @@ This tool is used to get the pancakeSwap fees for Effect Network.
 - Retrieve a detailed overview of the pancake swap fees collected by Effect in the liquidity Pool
 - Output to json/csv
 - Generate html document
-- Publish to IPFS
-- 
+- Search within ranges
+
 
 # 📌 Requirements
 You will need node and npm in order to get this progam running. 
