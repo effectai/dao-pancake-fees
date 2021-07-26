@@ -73,35 +73,35 @@ const buildList = (data) => {
 }
 
 const buildSummary = (data) => {
-    const totalEFXFees = data.reduce((a, b) => a + b.efxFeesFormatted, 0)
-    const totalWBNBFees = data.reduce((a, b) => a + b.wbnbFeesFormatted, 0)
+    const totalEFXFees = data.reduce((a, b) => a + parseFloat(b.efxFeesFormatted), 0)
+    const totalWBNBFees = data.reduce((a, b) => a + parseFloat(b.wbnbFeesFormatted), 0)
     
+    const totalEfxSwaps = data.filter(tx => tx.swapFrom === 'EFX').length
+    const totalWbnbSwaps = data.filter(tx => tx.swapFrom === 'WBNB').length
+
     const totalSwaps = data.length
-    const totalEFXFeesPerSwap = totalEFXFees / totalSwaps
-    const totalWBNBFeesPerSwap = totalWBNBFees / totalSwaps
+    const averageEFXFeesPerSwap = totalEFXFees / totalEfxSwaps
+    const averageWBNBFeesPerSwap = totalWBNBFees / totalWbnbSwaps
 
-
-    const averageEFXFeesPerSwap = totalEFXFees / totalSwaps
-    const averageWBNBFeesPerSwap = totalWBNBFees / totalSwaps
+    // const minSwapEfx = data.reduce((a, b) => Math.min(a, b.efxFeesFormatted), Infinity)
+    const maxSwapEfx = data.reduce((a, b) => Math.max(a, b.efxFeesFormatted), 0)
     
-
-    // const maxSwapEfx = data.reduce(a => a.efxFeesFormatted, Math.max)
-    // const minSwapEfx = data.reduce(a => a.efxFeesFormatted, Math.min)
-    
-    // const maxSwapWBNB = data.reduce(a => a.wbnbFeesFormatted, Math.max)
-    // const minSwapWBNB = data.reduce(a => a.wbnbFeesFormatted, Math.min)
+    // const minSwapWBNB = data.reduce((a, b) => Math.min(a, b.wbnbFeesFormatted), Infinity)
+    const maxSwapWBNB = data.reduce((a, b) => Math.max(a, b.wbnbFeesFormatted), 0)
 
     return {
         totalEFXFees: totalEFXFees,
         totalWBNBFees: totalWBNBFees,
         totalSwaps: totalSwaps,
-        totalEFXFeesPerSwap: totalEFXFeesPerSwap,
-        totalWBNBFeesPerSwap: totalWBNBFeesPerSwap,
+        totalEfxSwaps: totalEfxSwaps,
+        efxPercentage: Math.round(totalEfxSwaps / totalSwaps * 100),
+        wbnbPercentage: Math.round(totalWbnbSwaps / totalSwaps * 100),
+        totalWbnbSwaps: totalWbnbSwaps,
         averageEFXFeesPerSwap: averageEFXFeesPerSwap,
         averageWBNBFeesPerSwap: averageWBNBFeesPerSwap,
-        // maxSwapEfx: maxSwapEfx,
+        maxSwapEfx: maxSwapEfx,
         // minSwapEfx: minSwapEfx,
-        // maxSwapWBNB: maxSwapWBNB,
+        maxSwapWBNB: maxSwapWBNB,
         // minSwapWBNB: minSwapWBNB,
     }
 }
