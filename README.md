@@ -52,10 +52,10 @@ npm install
 node index.js --help
 ```
 
-It can take a while to query the bsc node to get all of the transactions.
+Please note that it can take a while to query the bsc node to get all of the transactions.
 
 # 👟 Usage
-Simply type pancake-efx in to your terminal of choice and you'll get an output of how to use this tool. It is hihgly recomended to use another BSC RPC endpoint instead of the default one provided with this tools. 
+It is highly recomended to use another BSC RPC endpoint instead of the default one provided with this tools. 
 Here are some options: 
 - https://moralis.io/ (Currently Recommended)
 - https://www.quicknode.com/
