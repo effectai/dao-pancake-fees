@@ -45,7 +45,6 @@ const allEvents = async (head, tail, eventName, bsc) => {
 
     const blockRangeLimit = 5000
     const delta = tail - head
-    const totalBlocks = delta * blockRangeLimit
     const startValueBar = 0
     
     let results
