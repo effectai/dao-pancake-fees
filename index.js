@@ -4,7 +4,7 @@ const Web3 = require('web3')
 const yargs = require('yargs')
 const { green } = require('chalk')
 const { hideBin } = require('yargs/helpers')
-const { feeObject, buildList, buildSummary } = require('./src/calculate')
+const { buildList, buildSummary } = require('./src/calculate')
 const { writeToDisk, createHTML } = require('./src/util')
 const { allEvents } = require('./src/contract')
 
@@ -40,8 +40,8 @@ const argv = yargs(hideBin(process.argv))
     .describe('pipe', 'Pipe to stdout').alias('pipe', 'p').boolean('pipe')
     .describe('json', 'Output as json').alias('json', 'j').boolean('json')
     .describe('csv', 'Output as csv').alias('csv', 'c').boolean('csv')
-    .conflicts('json', 'csv')
-    .conflicts('pipe', 'file')
+    // .conflicts('json', 'csv')
+    // .conflicts('pipe', 'file')
     .alias('v', 'version')
     .help('h')
     .alias('h', 'help')
@@ -74,6 +74,9 @@ const argv = yargs(hideBin(process.argv))
         if (argv.pipe) {
             console.clear()
             process.stdout.write(JSON.stringify(list, null, 2))
+        } else {
+            console.log(`\n${green('💸💸💸')}`)
+            console.log(`${JSON.stringify(buildSummary(list), null, 2)}`)
         }
 
     } catch (error) {

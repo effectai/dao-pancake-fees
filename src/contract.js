@@ -22,7 +22,7 @@ const getEvents = async (head, tail, eventName, contract) => {
         if (error.message.includes('Invalid JSON RPC response')) {
             await getEvents(head, tail)
         } else {
-            console.erlror(error)
+            console.error(error)
         }
     }
 }    
