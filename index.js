@@ -7,8 +7,13 @@ const { hideBin } = require('yargs/helpers')
 const { buildList, buildSummary } = require('./src/calculate')
 const { writeToDisk, createHTML } = require('./src/util')
 const { allEvents } = require('./src/contract')
+const dotenv = require('dotenv')
 
-const officialBscRpc = 'https://bsc-dataseed.binance.org/' // Standard BSC RPC Node
+// Load environment variables from .env file
+dotenv.config()
+
+const officialBscRpc = process.env.BSC_RPC ? process.env.BSC_RPC : 'https://bsc-dataseed.binance.org/'
+const contractDeploymentBlockHeight = 7580000
 
 const welcomeMessage = `\
  _____  __  __           _     _   _      _                      _
@@ -24,7 +29,7 @@ ${green('Usage: $0 [options]')}
 const argv = yargs(hideBin(process.argv))
     .usage(welcomeMessage)
     .default({
-        start: 7580000, //Contract Deployment Block Height
+        start: contractDeploymentBlockHeight, 
         end: 'latest',
         rpc: officialBscRpc,
         file: true,
@@ -75,7 +80,6 @@ const argv = yargs(hideBin(process.argv))
             console.clear()
             process.stdout.write(JSON.stringify(list, null, 2))
         } else {
-            console.log(`\n${green('💸💸💸')}`)
             console.log(`${JSON.stringify(buildSummary(list), null, 2)}`)
         }
 

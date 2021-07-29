@@ -20,7 +20,7 @@ const getEvents = async (head, tail, eventName, contract) => {
     } catch (error) {
         // 'Invalid JSON RPC response: "upstream request timeout"' || 'Invalid JSON RPC response: ""'
         if (error.message.includes('Invalid JSON RPC response')) {
-            await getEvents(head, tail)
+            await getEvents(head, tail, eventName, contract)
         } else {
             console.error(error)
         }
@@ -41,7 +41,6 @@ const allEvents = async (head, tail, eventName, bsc) => {
     const PANCAKESWAP_EFX_ADDRESS = '0xAf1DB0c88a2Bd295F8EdCC8C73f9eB8BcEe6fA8a'
     const pancakeswapAbi = JSON.parse(fs.readFileSync(path.join(__dirname, '../abi/pancake_efx_abi.json'), 'utf8'))
     const pancakeContract = new bsc.eth.Contract(pancakeswapAbi, PANCAKESWAP_EFX_ADDRESS)
-
 
     const blockRangeLimit = 5000
     const delta = tail - head
