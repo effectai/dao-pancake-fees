@@ -6,9 +6,7 @@
   "dependencies": {
     "chalk": "^4.1.1",
     "cli-progress": "^3.9.0",
-    "ipfs-core": "^0.8.0",
-    "jspdf": "^2.3.1",
-    "node-fetch": "^2.6.1",
+    "dotenv": "^10.0.0",
     "papaparse": "^5.3.1",
     "web3": "^1.4.0",
     "yargs": "^17.0.1"
