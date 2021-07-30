@@ -57,19 +57,16 @@ const argv = yargs(hideBin(process.argv))
 
 (async () => {    
     try {
+
+        let list, summary
     
         if (argv.input) {
             const input = JSON.parse(fs.readFileSync(path.join(__dirname, argv.input), 'utf8'))
-            const list = buildList(input)
-            if (argv.file) {
-                writeToDisk('calculated_fee_swaps', argv, list)
-            }
-            const summary = buildSummary(list)
-            console.log(summary)
-            return
+            list = buildList(input)
+            summary = buildSummary(list)
 
         } else {
-            
+
             const bscWeb3 = new Web3(process.env.BSC_RPC || argv.rpc)
             const latestBlockHeight = (await bscWeb3.eth.getBlock('latest')).number
             const startBlock = argv.start
@@ -79,24 +76,24 @@ const argv = yargs(hideBin(process.argv))
             const result = await allEvents(startBlock, endBlock, 'Swap', bscWeb3)
             fs.writeFileSync(path.join(__dirname, `/data/raw_rpc_swap_data_${Date.now()}.json`), JSON.stringify(result, null, 2))
 
-            const list = buildList(result)
+            list = buildList(result)
+        }
 
-            if (argv.file) {
-                writeToDisk('calculated_fee_swaps', argv, file)
-            }
+        if (argv.file) {
+            writeToDisk('calculated_fee_swaps', argv, list)
+        }
 
-            if (argv.html) {
-                const summary = buildSummary(list)
-                createHTML(summary)
-            }
+        if (argv.html) {
+            const summary = buildSummary(list)
+            createHTML(summary)
+        }
 
-            if (argv.pipe) {
-                console.clear()
-                process.stdout.write(JSON.stringify(list, null, 2))
-            } else {
-                // console.log(`${JSON.stringify(buildSummary(list), null, 2)}`)
-                console.log(buildSummary(list))
-            }
+        if (argv.pipe) {
+            console.clear()
+            process.stdout.write(JSON.stringify(list, null, 2))
+        } else {
+            // console.log(`${JSON.stringify(buildSummary(list), null, 2)}`)
+            console.log(buildSummary(list))
         }
 
     } catch (error) {
