@@ -1,7 +1,7 @@
 # Dao_Pancake_Fee
 
 ```
-$ node index.js --help
+$ node index.js -h
  _____  __  __           _     _   _      _                      _
 | ____|/ _|/ _| ___  ___| |_  | \ | | ___| |___      _____  _ __| | __
 |  _| | |_| |_ / _ \/ __| __| |  \| |/ _ \ __\ \ /\ / / _ \| '__| |/ /
@@ -16,18 +16,16 @@ Options:
   -s, --start    Start block number                           [default: 7580000]
   -e, --end      End block number                            [default: "latest"]
   -r, --rpc      BSC RPC endpoint [default: "https://bsc-dataseed.binance.org/"]
+  -i, --input    Input file <path>
   -f, --file     Save file to disk                     [boolean] [default: true]
   -m, --html     Create HTML report                                    [boolean]
   -p, --pipe     Pipe to stdout                                        [boolean]
   -j, --json     Output as json                        [boolean] [default: true]
   -c, --csv      Output as csv                                         [boolean]
-  -i, --input    Input file
   -h, --help     Show help                                             [boolean]
   -v, --version  Show version number                                   [boolean]
 
  🌴
-
-
 ```
 ---
 
@@ -37,17 +35,16 @@ This tool is used to get the pancakeSwap fees for Effect Network.
 
 # 🌟 Features
 - Retrieve a detailed overview of the pancake swap fees collected by Effect in the liquidity Pool
-- Output to json/csv
-- Generate html document
+- Output to json
+- Output to csv (import into spreadsheet)
+- Generate html report
 - Search within ranges
-
 
 # 📌 Requirements
 You will need node and npm in order to get this progam running. 
 You can download them here: https://nodejs.org/en/download/
 
 # 🚀 Quick and dirty
-
 Clone this repository, install the modules and run it.
 ```
 git clone https://github.com/effectai/Dao_Pancake_Fee.git
