@@ -1,11 +1,12 @@
 const fs = require('fs')
 const path = require('path')
+const papaparse = require('papaparse')
 
 const writeToDisk = (name, argv, data) => {
     if (argv.json) {
         try {
             const jsonFileName = `${name}_${Date.now()}.json`
-            fs.writeFileSync(path.join(__dirname, `/data/${jsonFileName}`), JSON.stringify(data, null, 2))
+            fs.writeFileSync(path.join(__dirname, `../data/${jsonFileName}`), JSON.stringify(data, null, 2))
             console.log(`📄 Saved to ${jsonFileName}`)            
         } catch (error) {
             console.error()
@@ -16,7 +17,7 @@ const writeToDisk = (name, argv, data) => {
         const csvFileName = `${name}_${Date.now()}.csv`
         try {
             const csv = papaparse.unparse(data)
-            fs.writeFileSync(path.join(__dirname, `/data/${csvFileName}`), csv)
+            fs.writeFileSync(path.join(__dirname, `../data/${csvFileName}`), csv)
             console.log(`📄 Saved to ${csvFileName}`)
         } catch (error) {
             console.error(error)
