@@ -47,7 +47,6 @@ const argv = yargs(hideBin(process.argv))
     .describe('pipe', 'Pipe to stdout').alias('pipe', 'p').boolean('pipe')
     .describe('json', 'Output as json').alias('json', 'j').boolean('json')
     .describe('csv', 'Output as csv').alias('csv', 'c').boolean('csv')
-    .describe('help', 'Print this help message').alias('help', 'h')
     // .conflicts('json', 'csv')
     // .conflicts('pipe', 'file')
     .alias('v', 'version')
@@ -68,7 +67,9 @@ const argv = yargs(hideBin(process.argv))
             const summary = buildSummary(list)
             console.log(summary)
             return
-        } else {       
+
+        } else {
+            
             const bscWeb3 = new Web3(process.env.BSC_RPC || argv.rpc)
             const latestBlockHeight = (await bscWeb3.eth.getBlock('latest')).number
             const startBlock = argv.start
@@ -79,7 +80,6 @@ const argv = yargs(hideBin(process.argv))
             fs.writeFileSync(path.join(__dirname, `/data/raw_rpc_swap_data_${Date.now()}.json`), JSON.stringify(result, null, 2))
 
             const list = buildList(result)
-            const file = argv.csv ? papaparse.unparse(list) : list
 
             if (argv.file) {
                 writeToDisk('calculated_fee_swaps', argv, file)

@@ -2,18 +2,18 @@ const fs = require('fs')
 const path = require('path')
 const Web3 = require('web3')
 const cliProgress = require('cli-progress')
-const {calculateFeeObject} = require('./calculate')
 
 /**
  * Get events from BSC contract in batches
  * @param {number} head - starting block number
  * @param {number} tail - ending block number
  * @param {eventName} eventName - name of event to get {'allEvents', 'Swap', 'Sync', 'Transfer', 'Approval', 'Mint', 'Burn'}}
+ * @param {contract} contract - web3 contract object
+ * @param {cliProgress} bar - progress bar object
  * @returns {Promise} - promise that resolves to events array
  */
 const getEvents = async (head, tail, eventName, contract, bar) => {
     try {
-        bar.update({error: "N/A"})
         return await contract.getPastEvents(eventName, {
             fromBlock: head,
             toBlock: tail
@@ -22,8 +22,8 @@ const getEvents = async (head, tail, eventName, contract, bar) => {
         // 'Invalid JSON RPC response: "upstream request timeout"' || 'Invalid JSON RPC response: ""'
         if (error.message.includes('Invalid JSON RPC response')) {
             // console.log(error.message)
-            bar.update({error: error.message})
-            await getEvents(head, tail, eventName, contract)
+            bar.update({error: `${error.message} @ block: ${head}`})
+            await getEvents(head, tail, eventName, contract, bar)
         } else {
             console.error(error)
         }
@@ -55,7 +55,7 @@ const allEvents = async (head, tail, eventName, bsc) => {
     let previousPointer = head
     
     const bar = new cliProgress.SingleBar({
-        format: ' 🥨 {bar} | {percentage}% | ETA: {eta_formatted} | Duration: {duration_formatted} | {value}/{total} Blocks | Total Swaps: {swaps} | Error: {error}',
+        format: ' 🥨 {bar} | {percentage}% | ETA: {eta_formatted} | Duration: {duration_formatted} | {value}/{total} Blocks | totalSwaps: {swaps} | lastError: {error}',
     }, cliProgress.Presets.shades_classic)
     
     bar.start(delta, startValueBar, {
@@ -65,10 +65,7 @@ const allEvents = async (head, tail, eventName, bsc) => {
 
     const updateBar = () => {
         bar.increment(blockRangeLimit)
-        bar.update({
-            resultsLength: results.length,
-            swaps: swapEvents.length
-        })
+        bar.update({ swaps: swapEvents.length })
     }
     
     while (pointer <= tail) {
