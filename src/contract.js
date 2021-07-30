@@ -13,6 +13,7 @@ const {calculateFeeObject} = require('./calculate')
  */
 const getEvents = async (head, tail, eventName, contract, bar) => {
     try {
+        bar.update({error: "N/A"})
         return await contract.getPastEvents(eventName, {
             fromBlock: head,
             toBlock: tail
@@ -54,11 +55,10 @@ const allEvents = async (head, tail, eventName, bsc) => {
     let previousPointer = head
     
     const bar = new cliProgress.SingleBar({
-        format: ' 🥨 {bar} | {percentage}% | ETA: {eta_formatted} | Duration: {duration_formatted} | {value}/{total} Blocks | Swaps: {resultsLength} | Total Swaps: {swaps} | Error: {error}',
+        format: ' 🥨 {bar} | {percentage}% | ETA: {eta_formatted} | Duration: {duration_formatted} | {value}/{total} Blocks | Total Swaps: {swaps} | Error: {error}',
     }, cliProgress.Presets.shades_classic)
     
     bar.start(delta, startValueBar, {
-        resultsLength: "N/A",
         swaps: "N/A",
         error: "N/A",
     })
