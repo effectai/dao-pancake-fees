@@ -11,7 +11,7 @@ const {calculateFeeObject} = require('./calculate')
  * @param {eventName} eventName - name of event to get {'allEvents', 'Swap', 'Sync', 'Transfer', 'Approval', 'Mint', 'Burn'}}
  * @returns {Promise} - promise that resolves to events array
  */
-const getEvents = async (head, tail, eventName, contract) => {
+const getEvents = async (head, tail, eventName, contract, bar) => {
     try {
         return await contract.getPastEvents(eventName, {
             fromBlock: head,
@@ -20,6 +20,8 @@ const getEvents = async (head, tail, eventName, contract) => {
     } catch (error) {
         // 'Invalid JSON RPC response: "upstream request timeout"' || 'Invalid JSON RPC response: ""'
         if (error.message.includes('Invalid JSON RPC response')) {
+            // console.log(error.message)
+            bar.update({error: error.message})
             await getEvents(head, tail, eventName, contract)
         } else {
             console.error(error)
@@ -52,12 +54,13 @@ const allEvents = async (head, tail, eventName, bsc) => {
     let previousPointer = head
     
     const bar = new cliProgress.SingleBar({
-        format: ' 🥨 {bar} | {percentage}% | ETA: {eta_formatted} | Duration: {duration_formatted} | {value}/{total} Blocks | Swaps: {resultsLength} | Total Swaps: {swaps}',
+        format: ' 🥨 {bar} | {percentage}% | ETA: {eta_formatted} | Duration: {duration_formatted} | {value}/{total} Blocks | Swaps: {resultsLength} | Total Swaps: {swaps} | Error: {error}',
     }, cliProgress.Presets.shades_classic)
     
     bar.start(delta, startValueBar, {
         resultsLength: "N/A",
         swaps: "N/A",
+        error: "N/A",
     })
 
     const updateBar = () => {
@@ -69,7 +72,7 @@ const allEvents = async (head, tail, eventName, bsc) => {
     }
     
     while (pointer <= tail) {
-        results = await getEvents(previousPointer, pointer, eventName, pancakeContract)
+        results = await getEvents(previousPointer, pointer, eventName, pancakeContract, bar)
         if (results) {
             if(results.length > 0) {
                 results.forEach(event => swapEvents.push(event))
@@ -82,7 +85,7 @@ const allEvents = async (head, tail, eventName, bsc) => {
 
         if(pointer > tail) {
             pointer = tail
-            const result = await getEvents(previousPointer, pointer, eventName, pancakeContract)
+            const result = await getEvents(previousPointer, pointer, eventName, pancakeContract, bar)
             if(result) {
                 if(result.length > 0) {
                     result.forEach(event => swapEvents.push(event))
