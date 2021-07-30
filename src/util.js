@@ -58,28 +58,39 @@ const createHTML = (data) => {
                     <td>Total Swaps</td>
                     <td>${data.totalSwaps}</td>
                 </tr>
+                <br>
                 <tr>
                     <td>Total EFX Swaps</td>
                     <td>${data.totalEfxSwaps}</td>
+                </tr>
+                <tr>
+                    <td>Total Calculated to EFX</td>
+                    <td>${data.totalCalculatedToEFX}</td>
+                </tr>                
                 <tr>
                     <td>EFX%</td>
                     <td>${data.efxPercentage}%</td>            
                 </tr>
+                <br>
                 <tr>
                     <td>Total WBNB Swaps</td>
                     <td>${data.totalWbnbSwaps}</td>
                 </tr>
                 <tr>
+                    <td>Total Calculated to WBNB</td>
+                    <td>${data.totalCalculatedToWBNB}</td>
+                </tr>                
+                <tr>
                     <td>WBNB%</td>
                     <td>${data.wbnbPercentage}%</td>
                 </tr>
                 <tr>
-                    <td>Total EFX Fees</td>
-                    <td>${data.totalEFXFees}</td>
+                    <td>Total EFX Input Fees</td>
+                    <td>${data.inputEFX}</td>
                 </tr>
                 <tr>
-                    <td>Total WBNB Fees</td>
-                    <td>${data.totalWBNBFees}</td>
+                    <td>Total WBNB Input Fees</td>
+                    <td>${data.inputWBNB}</td>
                 </tr>
                 <tr>
                     <td>Avg EFX Fee/Swap</td>
@@ -88,22 +99,6 @@ const createHTML = (data) => {
                 <tr>
                     <td>Avg WBNB Fee/Swap</td>
                     <td>${data.averageWBNBFeesPerSwap}</td>
-                </tr>
-                <tr>
-                    <td>Min Swap Fee EFX</td>
-                    <td>${data.minSwapEfx}</td>
-                </tr>
-                <tr>
-                    <td>Max Swap Fee WBNB</td>
-                    <td>${data.maxSwapEfx}</td>
-                </tr>
-                <tr>
-                    <td>Min Swap Fee WBNB</td>
-                    <td>${data.minSwapWBNB}</td>
-                </tr>
-                <tr>
-                    <td>Max Swap Fee WBN</td>
-                    <td>${data.maxSwapWBNB}</td>
                 </tr>
 
             </tbody>
