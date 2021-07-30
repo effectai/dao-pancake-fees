@@ -13,18 +13,21 @@ Usage: index.js [options]
 
 
 Options:
-  -s, --start    Start block number                          [default: 7580000]
-  -e, --end      End block number                           [default: "latest"]
-  -r, --rpc      BSC RPC endpoint[default: "https://bsc-dataseed.binance.org/"]
-  -f, --file     Save file to disk                    [boolean] [default: true]
-  -m, --html     Create HTML report                                   [boolean]
-  -p, --pipe     Pipe to stdout                                       [boolean]
-  -j, --json     Output as json                       [boolean] [default: true]
-  -c, --csv      Output as csv                                        [boolean]
-  -h, --help     Show help                                            [boolean]
-  -v, --version  Show version number                                  [boolean]
+  -s, --start    Start block number                           [default: 7580000]
+  -e, --end      End block number                            [default: "latest"]
+  -r, --rpc      BSC RPC endpoint [default: "https://bsc-dataseed.binance.org/"]
+  -f, --file     Save file to disk                     [boolean] [default: true]
+  -m, --html     Create HTML report                                    [boolean]
+  -p, --pipe     Pipe to stdout                                        [boolean]
+  -j, --json     Output as json                        [boolean] [default: true]
+  -c, --csv      Output as csv                                         [boolean]
+  -i, --input    Input file
+  -h, --help     Show help                                             [boolean]
+  -v, --version  Show version number                                   [boolean]
 
  🌴
+
+
 ```
 ---
 
@@ -49,7 +52,7 @@ Clone this repository, install the modules and run it.
 ```
 git clone https://github.com/effectai/Dao_Pancake_Fee.git
 npm install
-node index.js --help
+node index.js
 ```
 
 Please note that it can take a while to query the bsc node to get all of the transactions.
@@ -57,7 +60,7 @@ Please note that it can take a while to query the bsc node to get all of the tra
 # 👟 Usage
 It is highly recomended to use another BSC RPC endpoint instead of the default one provided with this tools. 
 Here are some options: 
-- https://moralis.io/ (Currently Recommended)
+- https://moralis.io/ (Recommended // Websocket)
 - https://www.quicknode.com/
 - https://www.ankr.com/
 - https://web3api.com/
