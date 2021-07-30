@@ -32,6 +32,10 @@ const feeObject = (tx, efxPcsLpRatio = new BN('0.98')) => {
         lpFeeFormatted: new BN('0'),
         efxFeesFormatted: new BN('0'),
         wbnbFeesFormatted: new BN('0'),
+        inOutEfx: new BN('0'),
+        inOutWbnb: new BN('0'),
+        totalEfxOnlyFee: null,
+        totalWbnbOnlyFee: null,
     }
 
     if (tx.returnValues.amount0In != "0") {
@@ -39,6 +43,8 @@ const feeObject = (tx, efxPcsLpRatio = new BN('0.98')) => {
         txFeeResponse.swapTo = 'EFX'
         txFeeResponse.swapAmountFrom = new BN(tx.returnValues.amount0In)
         txFeeResponse.swapAmountTo = new BN(tx.returnValues.amount1Out)
+        txFeeResponse.onlyWbnb = new BN(tx.returnValues.amount0In)
+        txFeeResponse.onlyEfx = new BN(tx.returnValues.amount1Out)
     }
 
     if (tx.returnValues.amount1In != "0") {
@@ -46,6 +52,8 @@ const feeObject = (tx, efxPcsLpRatio = new BN('0.98')) => {
         txFeeResponse.swapTo = 'WBNB'
         txFeeResponse.swapAmountFrom = new BN(tx.returnValues.amount1In)
         txFeeResponse.swapAmountTo = new BN(tx.returnValues.amount0Out)
+        txFeeResponse.onlyWbnb = new BN(tx.returnValues.amount0Out)
+        txFeeResponse.onlyEfx = new BN(tx.returnValues.amount1In)
     }
 
     // check if sender is the same as to address
@@ -62,6 +70,9 @@ const feeObject = (tx, efxPcsLpRatio = new BN('0.98')) => {
     // txFeeResponse.totalFeeFormatted = txFeeResponse.totalFee
     // txFeeResponse.lpFeeFormatted    = txFeeResponse.lpFee
 
+    txFeeResponse.totalEfxOnlyFee   = txFeeResponse.onlyEfx.mul(lpFee).div(divider)
+    txFeeResponse.totalWbnbOnlyFee  = txFeeResponse.onlyWbnb.mul(lpFee).div(divider)
+
     if (txFeeResponse.swapFrom === 'WBNB') {
         txFeeResponse.wbnbFeesFormatted = txFeeResponse.totalFee
     } else {
@@ -74,15 +85,14 @@ const feeObject = (tx, efxPcsLpRatio = new BN('0.98')) => {
 const buildSummary = (data) => {
     
     const totalEFXFees = data.reduce((a, b) => a.add((b.efxFeesFormatted)), new BN('0'))
-    // const totalEFXFees = data.reduce((a, b) => b.efxFeesFormatted.add(a), new BN('0'))
     const totalWBNBFees = data.reduce((a, b) => a.add(b.wbnbFeesFormatted), new BN('0'))
 
-    console.log(`Total EFX fees: ${totalEFXFees}\nTotal WBNB fees: ${totalWBNBFees}`)
+    const totalFeesEfxOnly = data.reduce((a, b) => a.add(b.totalEfxOnlyFee), new BN('0'))
+    const totalFeesWbnbOnly = data.reduce((a, b) => a.add(b.totalWbnbOnlyFee), new BN('0'))
     
+    const totalSwaps = data.length
     const totalEfxSwaps = data.filter(tx => tx.swapFrom === 'EFX').length
     const totalWbnbSwaps = data.filter(tx => tx.swapFrom === 'WBNB').length
-
-    const totalSwaps = data.length
     const averageEFXFeesPerSwap = totalEFXFees / totalEfxSwaps
     const averageWBNBFeesPerSwap = totalWBNBFees / totalWbnbSwaps
 
@@ -93,17 +103,20 @@ const buildSummary = (data) => {
     // const maxSwapWBNB = data.reduce((a, b) => BN.max(a.wbnbFeesFormatted, b.wbnbFeesFormatted))
 
     return {
-        totalEFXFees: totalEFXFees,
-        efxFormatted: formatFee(totalEFXFees),
-        totalWBNBFees: totalWBNBFees,
-        wbnbFormatted: formatFee(totalWBNBFees),
+        // totalEFXFees: totalEFXFees,
+        inputEFX: formatFee(totalEFXFees),
+        totalCalculatedToEFX: formatFee(totalFeesEfxOnly),
+        // totalFeesEfxOnly: totalFeesEfxOnly,
+        // totalWBNBFees: totalWBNBFees,
+        inputWBNB: formatFee(totalWBNBFees),
+        totalCalculatedtoWBNB: formatFee(totalFeesWbnbOnly),
         totalSwaps: totalSwaps,
         totalEfxSwaps: totalEfxSwaps,
         totalWbnbSwaps: totalWbnbSwaps,
-        efxPercentage: Math.round(totalEfxSwaps / totalSwaps * 100),
-        wbnbPercentage: Math.round(totalWbnbSwaps / totalSwaps * 100),
-        averageEFXFeesPerSwap: averageEFXFeesPerSwap,
-        averageWBNBFeesPerSwap: averageWBNBFeesPerSwap,
+        // efxPercentage: Math.round(totalEfxSwaps / totalSwaps * 100),
+        // wbnbPercentage: Math.round(totalWbnbSwaps / totalSwaps * 100),
+        // averageEFXFeesPerSwap: averageEFXFeesPerSwap,
+        // averageWBNBFeesPerSwap: averageWBNBFeesPerSwap
         // maxSwapEfx: maxSwapEfx,
         // minSwapEfx: minSwapEfx,
         // maxSwapWBNB: maxSwapWBNB,
