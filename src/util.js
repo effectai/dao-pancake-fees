@@ -7,12 +7,12 @@ const writeToDisk = (name, argv, data) => {
         try {
             const jsonFileName = `${name}_${Date.now()}.json`
             fs.writeFileSync(path.join(__dirname, `../data/${jsonFileName}`), JSON.stringify(data, null, 2))
-            console.log(`📄 Saved to ${jsonFileName}`)            
+            console.log(`📄 Saved to ${jsonFileName}`)
         } catch (error) {
             console.error()
         }
     }
-    
+
     if (argv.csv) {
         const csvFileName = `${name}_${Date.now()}.csv`
         try {
@@ -34,78 +34,68 @@ const writeToDisk = (name, argv, data) => {
 const createHTML = (data) => {
     const htmlFileName = `efx_pcs_lp_swaps_${Date.now()}.html`
     const html = `
-    <!doctype html>
-        <html lang="en">
-        <head>
-        <meta charset="utf-8">
-        <title>Dao Pancake-Liquidity Fee</title>
-        <meta name="" content="Starter Template">
-        <meta name="Effect.Network" content="Effect Network">
-        <link rel="stylesheet" href="css/styles.css?v=1.0">
-        <!--[if lt IE 9]>
-        <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
-        <![endif]-->
-        </head>
-        <body>
-        <table>
-            <thead>
-                <tr>
-                    <th>DAO Pancake Liquidity Fees</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td>Total Swaps</td>
-                    <td>${data.totalSwaps}</td>
-                </tr>
-                <br>
-                <tr>
-                    <td>Total EFX Swaps</td>
-                    <td>${data.totalEfxSwaps}</td>
-                </tr>
-                <tr>
-                    <td>Total Calculated to EFX</td>
-                    <td>${data.totalCalculatedToEFX}</td>
-                </tr>                
-                <tr>
-                    <td>EFX%</td>
-                    <td>${data.efxPercentage}%</td>            
-                </tr>
-                <br>
-                <tr>
-                    <td>Total WBNB Swaps</td>
-                    <td>${data.totalWbnbSwaps}</td>
-                </tr>
-                <tr>
-                    <td>Total Calculated to WBNB</td>
-                    <td>${data.totalCalculatedToWBNB}</td>
-                </tr>                
-                <tr>
-                    <td>WBNB%</td>
-                    <td>${data.wbnbPercentage}%</td>
-                </tr>
-                <tr>
-                    <td>Total EFX Input Fees</td>
-                    <td>${data.inputEFX}</td>
-                </tr>
-                <tr>
-                    <td>Total WBNB Input Fees</td>
-                    <td>${data.inputWBNB}</td>
-                </tr>
-                <tr>
-                    <td>Avg EFX Fee/Swap</td>
-                    <td>${data.averageEFXFeesPerSwap}</td>
-                </tr>
-                <tr>
-                    <td>Avg WBNB Fee/Swap</td>
-                    <td>${data.averageWBNBFeesPerSwap}</td>
-                </tr>
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Dao Pancake-Liquidity Fee</title>
+    <meta name="" content="Starter Template">
+    <meta name="Effect.Network" content="Effect Network">
+    <link rel="stylesheet" href="css/styles.css?v=1.0">
+    <style>
+      table { border-collapse: collapse; margin: 25px 0; font-size: 0.9em; font-family: sans-serif; min-width: 400px; box-shadow: 0 0 20px rgba(0, 0, 0, 0.15); margin: 0 auto; }
+      thead tr { background-color: #101D56; color: #ffffff; text-align: left; }
+      th, td { padding: 12px 15px; }
+      tbody tr { border-bottom: 1px solid #dddddd; }
+      tbody tr:nth-of-type(even) { background-color: #f3f3f3; }
+      tbody tr:last-of-type { border-bottom: 2px solid #101D56; }
+      #logo { width: 12em; display: block; margin: 2em auto; }
+      p { max-width: 500px; margin: 2em auto; font-family: "Inter",sans-serif; color: #363636; font-size: 16px; font-weight: 400; line-height: 1.7; text-align: center; }
+    </style>
+  </head>
+  <body>
+    <img id="logo" src="https://effect.network/_nuxt/img/effect-dao_h100.62b6528.png" />
 
-            </tbody>
-        </table>
-        <script src="js/scripts.js"></script>
-        </body>
-        </html>
+    <p>The Effect Network Foundation donates it's fees earned from the EFX
+    PancakeSwap pool to EffectDAO. A total of <b>43043.55 EFX</b> has been sent
+    to the <a href="https://bloks.io/account/feepool.efx">DAO feepool</a> of
+    cycle 16. See the below table for details.</p>
+
+    <table>
+        <thead>
+          <tr><th colspan="2">PancakeSwap Fees Summary</th></tr>
+        </thead>
+        <tbody>
+            <tr><td>DAO Cycle</td><td>1 to 15</td></tr>
+            <tr>
+                <td>Total swaps</td>
+                <td>${data.totalSwaps}</td>
+            </tr>
+            <tr>
+                <td>Collected EFX fees</td>
+                <td>${parseFloat(data.inputEFX).toFixed(2)}</td>
+            </tr>
+            <tr>
+                <td>Collected BNB fees</td>
+                <td>${parseFloat(data.inputWBNB).toFixed(2)}</td>
+            </tr>
+            <tr>
+                <td>Total fees for DAO in EFX</td>
+                <td>${parseFloat(data.totalCalculatedToEFX).toFixed(2)}</td>
+            </tr>
+            <tr>
+                <td><i>Avg EFX Fee/Swap</i></td>
+                <td>${parseFloat(data.averageEFXFeesPerSwap).toFixed(2)}</td>
+            </tr>
+            <tr>
+                <td><i>Avg BNB Fee/Swap</i></td>
+                <td>${parseFloat(data.averageWBNBFeesPerSwap).toFixed(4)}</td>
+            </tr>
+        </tbody>
+    </table>
+    <p><a href="https://github.com/effectai/dao-pancake-fees">view source</a></p>
+  </body>
+</html>
     `
     fs.writeFileSync(path.join(__dirname, `../${htmlFileName}`), html)
     console.log(`📄 Saved to ${htmlFileName}`)
