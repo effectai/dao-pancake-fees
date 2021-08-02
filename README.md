@@ -30,8 +30,7 @@ Options:
 ---
 
 # 📓 Why?
-This tool is used to get the pancakeSwap fees for Effect Network.
-
+This tool is used to calculate the pancakeSwap fees for Effect Network.
 
 # 🌟 Features
 - Retrieve a detailed overview of the pancake swap fees collected by Effect in the liquidity Pool
