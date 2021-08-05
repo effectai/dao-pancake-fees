@@ -1,39 +1,4 @@
-const fs = require('fs')
-const path = require('path')
-const papaparse = require('papaparse')
 
-const writeToDisk = (name, argv, data) => {
-    if (argv.json) {
-        try {
-            const jsonFileName = `${name}_${Date.now()}.json`
-            fs.writeFileSync(path.join(__dirname, `../data/${jsonFileName}`), JSON.stringify(data, null, 2))
-            console.log(`📄 Saved to ${jsonFileName}`)
-        } catch (error) {
-            console.error()
-        }
-    }
-
-    if (argv.csv) {
-        const csvFileName = `${name}_${Date.now()}.csv`
-        try {
-            const csv = papaparse.unparse(data)
-            fs.writeFileSync(path.join(__dirname, `../data/${csvFileName}`), csv)
-            console.log(`📄 Saved to ${csvFileName}`)
-        } catch (error) {
-            console.error(error)
-        }
-    }
-}
-
-/**
- * Create a pdf file with the given data and optionally publish it to IPFS and save to disk
- * @param {object} data - The data to be converted to a PDF
- * @param {boolean} toDisk - Whether to save the PDF to disk
- * @param {boolean} toIpfs - Whether to publish the PDF to IPFS
- */
-const createHTML = (data) => {
-    const htmlFileName = `efx_pcs_lp_swaps_${Date.now()}.html`
-    const html = `
 <!doctype html>
 <html lang="en">
   <head>
@@ -69,39 +34,31 @@ const createHTML = (data) => {
             <tr><td>DAO Cycle</td><td>1 to 15</td></tr>
             <tr>
                 <td>Total swaps</td>
-                <td>${data.totalSwaps}</td>
+                <td>1378</td>
             </tr>
             <tr>
                 <td>Collected EFX fees</td>
-                <td>${parseFloat(data.inputEFX).toFixed(2)}</td>
+                <td>32542.33</td>
             </tr>
             <tr>
                 <td>Collected BNB fees</td>
-                <td>${parseFloat(data.inputWBNB).toFixed(2)}</td>
+                <td>2.47</td>
             </tr>
             <tr>
                 <td>Total fees for DAO in EFX</td>
-                <td>${parseFloat(data.totalCalculatedToEFX).toFixed(2)}</td>
+                <td>43043.55</td>
             </tr>
             <tr>
                 <td><i>Avg EFX Fee/Swap</i></td>
-                <td>${parseFloat(data.averageEFXFeesPerSwap).toFixed(2)}</td>
+                <td>51.41</td>
             </tr>
             <tr>
                 <td><i>Avg BNB Fee/Swap</i></td>
-                <td>${parseFloat(data.averageWBNBFeesPerSwap).toFixed(4)}</td>
+                <td>0.0033</td>
             </tr>
         </tbody>
     </table>
     <p><a href="https://github.com/effectai/dao-pancake-fees">view source</a></p>
   </body>
 </html>
-    `
-    fs.writeFileSync(path.join(__dirname, `../${htmlFileName}`), html)
-    console.log(`📄 Saved to ${htmlFileName}`)
-}
-
-module.exports = {
-    writeToDisk,
-    createHTML
-}
+    
