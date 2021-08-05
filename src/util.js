@@ -80,8 +80,8 @@ const createHTML = (data) => {
                 <td>${parseFloat(data.inputWBNB).toFixed(2)}</td>
             </tr>
             <tr>
-                <td>Total fees for DAO in EFX</td>
-                <td>${parseFloat(data.totalCalculatedToEFX).toFixed(2)}</td>
+                <td><b>Total fees for DAO in EFX</b></td>
+                <td><b>${parseFloat(data.totalCalculatedToEFX).toFixed(2)}</b></td>
             </tr>
             <tr>
                 <td><i>Avg EFX Fee/Swap</i></td>
