@@ -3,6 +3,7 @@ const BN = Web3.utils.BN
 const fs = require('fs')
 const path = require('path')
 
+// PancakeSwap Contract
 const bsc = new Web3('https://speedy-nodes-nyc.moralis.io/89694b76348bf1a5042c306d/bsc/mainnet/archive')
 const PANCAKESWAP_EFX_ADDRESS = '0xAf1DB0c88a2Bd295F8EdCC8C73f9eB8BcEe6fA8a'
 const FOUNDATION_BSC_ADDRESS = '0xb57a461681e57aa9f6bcb3f41f68cf270466dcae'
@@ -18,7 +19,6 @@ const buildList = (data) => data.map(tx => feeObject(tx))
  * @return {Object} fee object
  */
 const feeObject = (tx) => {
-    // PancakeSwap Contract
     const totalSupply = pancakeContract.methods.totalSupply().call({}, tx.blockNumber)
     const foundationBalance = pancakeContract.methods.balanceOf(FOUNDATION_BSC_ADDRESS).call({}, tx.blockNumber);
     const efxPcsLpRatio = new BN(foundationBalance / totalSupply);
