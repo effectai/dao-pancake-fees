@@ -13,7 +13,7 @@ const papaparse = require('papaparse')
 // Load environment variables from .env file
 dotenv.config()
 
-const officialBscRpc = 'https://bsc-dataseed.binance.org/'
+const officialBscRpc = 'https://speedy-nodes-nyc.moralis.io/89694b76348bf1a5042c306d/bsc/mainnet/archive'
 const contractDeploymentBlockHeight = 7580000
 
 const welcomeMessage = `\
@@ -62,7 +62,7 @@ const argv = yargs(hideBin(process.argv))
     
         if (argv.input) {
             const input = JSON.parse(fs.readFileSync(path.join(__dirname, argv.input), 'utf8'))
-            list = buildList(input)
+            list = await buildList(input)
             summary = buildSummary(list)
 
         } else {
