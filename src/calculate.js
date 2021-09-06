@@ -17,92 +17,86 @@ const buildList = (data) => data.map(tx => feeObject(tx))
  * @param {Object} tx - transaction object
  * @return {Object} fee object
  */
-const feeObject = async (tx) => {
+const feeObject = (tx) => {
     // PancakeSwap Contract
-    try {
-        const totalSupply = await pancakeContract.methods.totalSupply().call({}, tx.blockNumber)
-        const foundationBalance = await pancakeContract.methods.balanceOf(FOUNDATION_BSC_ADDRESS).call({}, tx.blockNumber);
-        const efxPcsLpRatio = new BN(foundationBalance / totalSupply);
+    const totalSupply = pancakeContract.methods.totalSupply().call({}, tx.blockNumber)
+    const foundationBalance = pancakeContract.methods.balanceOf(FOUNDATION_BSC_ADDRESS).call({}, tx.blockNumber);
+    const efxPcsLpRatio = new BN(foundationBalance / totalSupply);
 
-        const totalFee = new BN('25'); // 0.25%
-        const lpFee = new BN('17'); // 0.17%
-        const pcstFee = new BN('3'); // 0.03%
-        const cakeFee = new BN('5'); // 0.05%
-        const divider = new BN('10000') // divide by 1000 to get the right precision
+    const totalFee = new BN('25'); // 0.25%
+    const lpFee = new BN('17'); // 0.17%
+    const pcstFee = new BN('3'); // 0.03%
+    const cakeFee = new BN('5'); // 0.05%
+    const divider = new BN('10000') // divide by 1000 to get the right precision
 
-        let txFeeResponse = {
-            transactionHash: null,
-            address: null,
-            totalFee: null,
-            lpFee: null,
-            pcstFee: null,
-            cakeFee: null,
-            swapFrom: null, // WBNB or EFX
-            swapTo: null, // EFX or WBNB
-            swapAmountFrom: new BN('0'),
-            swapAmountTo: new BN('0'),
-            totalFeeFormatted: new BN('0'),
-            lpFeeFormatted: new BN('0'),
-            efxFeesFormatted: new BN('0'),
-            wbnbFeesFormatted: new BN('0'),
-            inOutEfx: new BN('0'),
-            inOutWbnb: new BN('0'),
-            totalCalculatedToEFX: null,
-            totalCalculatedToWBNB: null,
-        }
-
-        if (tx.returnValues.amount0In != "0") {
-            txFeeResponse.swapFrom = 'WBNB'
-            txFeeResponse.swapTo = 'EFX'
-            txFeeResponse.swapAmountFrom = new BN(tx.returnValues.amount0In)
-            txFeeResponse.swapAmountTo = new BN(tx.returnValues.amount1Out)
-            txFeeResponse.onlyWbnb = new BN(tx.returnValues.amount0In)
-            txFeeResponse.onlyEfx = new BN(tx.returnValues.amount1Out)
-        }
-
-        if (tx.returnValues.amount1In != "0") {
-            txFeeResponse.swapFrom = 'EFX'
-            txFeeResponse.swapTo = 'WBNB'
-            txFeeResponse.swapAmountFrom = new BN(tx.returnValues.amount1In)
-            txFeeResponse.swapAmountTo = new BN(tx.returnValues.amount0Out)
-            txFeeResponse.onlyWbnb = new BN(tx.returnValues.amount0Out)
-            txFeeResponse.onlyEfx = new BN(tx.returnValues.amount1In)
-        }
-
-        // check if sender is the same as to address
-        // if (tx.returnValues.sender !== tx.returnValues.to) {
-        //     console.error(`The sender is not the same as the to address: \n${JSON.stringify(tx, null, 2)}`)
-        // }
-        
-        txFeeResponse.transactionHash   = tx.transactionHash
-        txFeeResponse.address           = tx.returnValues.sender
-
-        // These are calculated from the input values (efx and wbnb respectively)
-        txFeeResponse.totalFee          = totalFee.mul(txFeeResponse.swapAmountFrom).div(divider)
-        txFeeResponse.lpFee             = lpFee.mul(txFeeResponse.swapAmountFrom.mul(efxPcsLpRatio)).div(divider)
-        txFeeResponse.pcstFee           = pcstFee.mul(txFeeResponse.swapAmountFrom).div(divider)
-        txFeeResponse.cakeFee           = cakeFee.mul(txFeeResponse.swapAmountFrom).div(divider)
-        // txFeeResponse.totalFeeFormatted = txFeeResponse.totalFee
-        // txFeeResponse.lpFeeFormatted    = txFeeResponse.lpFee
-
-        if (txFeeResponse.swapFrom === 'WBNB') {
-            txFeeResponse.wbnbFeesFormatted = txFeeResponse.totalFee
-        } else {
-            txFeeResponse.efxFeesFormatted = txFeeResponse.totalFee
-        }
-
-        txFeeResponse.totalCalculatedToEFX   = txFeeResponse.onlyEfx.mul(lpFee).div(divider)
-        txFeeResponse.totalCalculatedToWBNB  = txFeeResponse.onlyWbnb.mul(lpFee).div(divider)
-
-
-        return txFeeResponse
-    } catch (error) {
-        console.error(error)
+    let txFeeResponse = {
+        transactionHash: null,
+        address: null,
+        totalFee: null,
+        lpFee: null,
+        pcstFee: null,
+        cakeFee: null,
+        swapFrom: null, // WBNB or EFX
+        swapTo: null, // EFX or WBNB
+        swapAmountFrom: new BN('0'),
+        swapAmountTo: new BN('0'),
+        totalFeeFormatted: new BN('0'),
+        lpFeeFormatted: new BN('0'),
+        efxFeesFormatted: new BN('0'),
+        wbnbFeesFormatted: new BN('0'),
+        inOutEfx: new BN('0'),
+        inOutWbnb: new BN('0'),
+        totalCalculatedToEFX: null,
+        totalCalculatedToWBNB: null,
     }
+
+    if (tx.returnValues.amount0In != "0") {
+        txFeeResponse.swapFrom = 'WBNB'
+        txFeeResponse.swapTo = 'EFX'
+        txFeeResponse.swapAmountFrom = new BN(tx.returnValues.amount0In)
+        txFeeResponse.swapAmountTo = new BN(tx.returnValues.amount1Out)
+        txFeeResponse.onlyWbnb = new BN(tx.returnValues.amount0In)
+        txFeeResponse.onlyEfx = new BN(tx.returnValues.amount1Out)
+    }
+
+    if (tx.returnValues.amount1In != "0") {
+        txFeeResponse.swapFrom = 'EFX'
+        txFeeResponse.swapTo = 'WBNB'
+        txFeeResponse.swapAmountFrom = new BN(tx.returnValues.amount1In)
+        txFeeResponse.swapAmountTo = new BN(tx.returnValues.amount0Out)
+        txFeeResponse.onlyWbnb = new BN(tx.returnValues.amount0Out)
+        txFeeResponse.onlyEfx = new BN(tx.returnValues.amount1In)
+    }
+
+    // check if sender is the same as to address
+    // if (tx.returnValues.sender !== tx.returnValues.to) {
+    //     console.error(`The sender is not the same as the to address: \n${JSON.stringify(tx, null, 2)}`)
+    // }
+    
+    txFeeResponse.transactionHash   = tx.transactionHash
+    txFeeResponse.address           = tx.returnValues.sender
+
+    // These are calculated from the input values (efx and wbnb respectively)
+    txFeeResponse.totalFee          = totalFee.mul(txFeeResponse.swapAmountFrom).div(divider)
+    txFeeResponse.lpFee             = lpFee.mul(txFeeResponse.swapAmountFrom.mul(efxPcsLpRatio)).div(divider)
+    txFeeResponse.pcstFee           = pcstFee.mul(txFeeResponse.swapAmountFrom).div(divider)
+    txFeeResponse.cakeFee           = cakeFee.mul(txFeeResponse.swapAmountFrom).div(divider)
+    // txFeeResponse.totalFeeFormatted = txFeeResponse.totalFee
+    // txFeeResponse.lpFeeFormatted    = txFeeResponse.lpFee
+
+    if (txFeeResponse.swapFrom === 'WBNB') {
+        txFeeResponse.wbnbFeesFormatted = txFeeResponse.totalFee
+    } else {
+        txFeeResponse.efxFeesFormatted = txFeeResponse.totalFee
+    }
+
+    txFeeResponse.totalCalculatedToEFX   = txFeeResponse.onlyEfx.mul(lpFee).div(divider)
+    txFeeResponse.totalCalculatedToWBNB  = txFeeResponse.onlyWbnb.mul(lpFee).div(divider)
+
+    return txFeeResponse
 }
 
 const buildSummary = (data) => {
-    
     const inputEFXFees = data.reduce((a, b) => a.add((b.efxFeesFormatted)), new BN('0'))
     const inputWBNBFees = data.reduce((a, b) => a.add(b.wbnbFeesFormatted), new BN('0'))
 

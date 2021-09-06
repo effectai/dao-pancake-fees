@@ -76,7 +76,7 @@ const argv = yargs(hideBin(process.argv))
             const result = await allEvents(startBlock, endBlock, 'Swap', bscWeb3)
             fs.writeFileSync(path.join(__dirname, `/data/raw_rpc_swap_data_${Date.now()}.json`), JSON.stringify(result, null, 2))
 
-            list = buildList(result)
+            list = await buildList(result)
         }
 
         if (argv.file) {
