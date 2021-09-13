@@ -76,6 +76,7 @@ const allEvents = async (head, tail, eventName, bsc) => {
             }
             updateBar()
         }
+        console.log('getEvents length', results.length)
         
         previousPointer = pointer
         pointer += blockRangeLimit

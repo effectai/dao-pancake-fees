@@ -8,7 +8,7 @@ const { buildList, buildSummary } = require('./src/calculate')
 const { writeToDisk, createHTML } = require('./src/util')
 const { allEvents } = require('./src/contract')
 const dotenv = require('dotenv')
-const papaparse = require('papaparse')
+const pp = require('papaparse')
 
 // Load environment variables from .env file
 dotenv.config()
@@ -61,9 +61,26 @@ const argv = yargs(hideBin(process.argv))
         let list, summary
     
         if (argv.input) {
-            const input = JSON.parse(fs.readFileSync(path.join(__dirname, argv.input), 'utf8'))
-            list = await buildList(input)
-            summary = buildSummary(list)
+            
+            if(argv.input.includes('csv')){
+                console.log(`Reading CSV file: ${argv.input}`)
+                const csvFile = fs.readFileSync(path.join(__dirname, argv.input), 'utf8')
+                pp.parse(csvFile, {
+                    header: true,
+                    delimiter: ',',
+                    dynamicTyping: true,
+                    // step: (row) => console.log(row),
+                    complete: (results, file) => {
+                        console.log(`Parsing CSV complete: ${file}, \n${JSON.stringify(results)}`)
+                        const data = results.data.filter((el) => el.block_height >= 9601569 && el.block_height <= 10789440)
+                        fs.writeFileSync(path.join(__dirname, 'test.json'), JSON.stringify(data))
+                        // console.log(data);
+                        // list = await buildList(input)
+                        // summary = buildSummary(list)             
+                    },
+                    error: (err, file) => console.log(`Parsing CSV error: ${err}`)
+            })
+        }
 
         } else {
 
@@ -83,20 +100,21 @@ const argv = yargs(hideBin(process.argv))
             writeToDisk('calculated_fee_swaps', argv, list)
         }
 
-        if (argv.html) {
-            const summary = buildSummary(list)
-            createHTML(summary)
-        }
+        // if (argv.html) {
+        //     const summary = buildSummary(list)
+        //     createHTML(summary)
+        // }
 
         if (argv.pipe) {
             console.clear()
             process.stdout.write(JSON.stringify(list, null, 2))
         } else {
             // console.log(`${JSON.stringify(buildSummary(list), null, 2)}`)
-            console.log(buildSummary(list))
+            //console.log(buildSummary(list))
         }
 
     } catch (error) {
         console.error(error)
     }
 })()
+
