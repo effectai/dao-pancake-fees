@@ -19,8 +19,8 @@ const buildList = (data) => data.map(tx => feeObject(tx))
  * @return {Object} fee object
  */
 const feeObject = (tx) => {
-    const totalSupply = pancakeContract.methods.totalSupply().call({}, tx.blockNumber)
-    const foundationBalance = pancakeContract.methods.balanceOf(FOUNDATION_BSC_ADDRESS).call({}, tx.blockNumber);
+    const totalSupply = pancakeContract.methods.totalSupply().call({}, tx.block_height)
+    const foundationBalance = pancakeContract.methods.balanceOf(FOUNDATION_BSC_ADDRESS).call({}, tx.block_height);
     const efxPcsLpRatio = new BN(foundationBalance / totalSupply);
 
     const totalFee = new BN('25'); // 0.25%
@@ -50,19 +50,19 @@ const feeObject = (tx) => {
         totalCalculatedToWBNB: null,
     }
 
-    if (tx.returnValues.amount0In != "0") {
+    if (tx.transfers_transfer_type == "IN") {
         txFeeResponse.swapFrom = 'WBNB'
         txFeeResponse.swapTo = 'EFX'
         txFeeResponse.swapAmountFrom = new BN(tx.returnValues.amount0In)
-        txFeeResponse.swapAmountTo = new BN(tx.returnValues.amount1Out)
+        txFeeResponse.swapAmountTo = new BN(tx.transfers_delta)
         txFeeResponse.onlyWbnb = new BN(tx.returnValues.amount0In)
         txFeeResponse.onlyEfx = new BN(tx.returnValues.amount1Out)
     }
 
-    if (tx.returnValues.amount1In != "0") {
+    if (tx.transfers_transfer_type == "OUT") {
         txFeeResponse.swapFrom = 'EFX'
         txFeeResponse.swapTo = 'WBNB'
-        txFeeResponse.swapAmountFrom = new BN(tx.returnValues.amount1In)
+        txFeeResponse.swapAmountFrom = new BN(tx.transfers_delta)
         txFeeResponse.swapAmountTo = new BN(tx.returnValues.amount0Out)
         txFeeResponse.onlyWbnb = new BN(tx.returnValues.amount0Out)
         txFeeResponse.onlyEfx = new BN(tx.returnValues.amount1In)
@@ -73,8 +73,8 @@ const feeObject = (tx) => {
     //     console.error(`The sender is not the same as the to address: \n${JSON.stringify(tx, null, 2)}`)
     // }
     
-    txFeeResponse.transactionHash   = tx.transactionHash
-    txFeeResponse.address           = tx.returnValues.sender
+    txFeeResponse.transactionHash   = tx.tx_hash
+    txFeeResponse.address           = tx.from_address
 
     // These are calculated from the input values (efx and wbnb respectively)
     txFeeResponse.totalFee          = totalFee.mul(txFeeResponse.swapAmountFrom).div(divider)

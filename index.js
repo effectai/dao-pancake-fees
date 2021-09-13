@@ -61,9 +61,41 @@ const argv = yargs(hideBin(process.argv))
         let list, summary
     
         if (argv.input) {
-            const input = JSON.parse(fs.readFileSync(path.join(__dirname, argv.input), 'utf8'))
-            list = await buildList(input)
-            summary = buildSummary(list)
+            
+            fs.readFile(path.join(__dirname, argv.input), async function (err,data) {
+                let input = data.toString();
+                var lines = input.split("\n");
+                var result = [];
+                var headers;
+                headers = lines[0].split(",");
+                let filteredHeaders = []
+                
+                for (var i = 0; i < headers.length; i++) {
+                    filteredHeaders.push(headers[i].replace(/\r?\n|\r/g, ""));
+                }
+        
+                for (var i = 1; i < lines.length; i++) {
+                    var obj = {};
+        
+                    if(lines[i] == undefined || lines[i].trim() == "") {
+                        continue;
+                    }
+        
+                    var words = lines[i].split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
+                    for(var j = 0; j < words.length; j++) {
+                        words[j] = words[j].replace(/\r?\n|\r/g, "");
+                        obj[filteredHeaders[j].trim().replace(/['"]+/g, '')] = words[j].replace(/['"]+/g, '');
+                    }
+                    result.push(obj);
+                }
+                result = result.filter(function (el) {
+                    return parseInt(el.block_height) >= 9601569 &&
+                           parseInt(el.block_height) <= 10789440;
+                  });
+                console.log(result);
+                  // list = await buildList(input)
+                // summary = buildSummary(list)
+            });
 
         } else {
 
@@ -83,17 +115,17 @@ const argv = yargs(hideBin(process.argv))
             writeToDisk('calculated_fee_swaps', argv, list)
         }
 
-        if (argv.html) {
-            const summary = buildSummary(list)
-            createHTML(summary)
-        }
+        // if (argv.html) {
+        //     const summary = buildSummary(list)
+        //     createHTML(summary)
+        // }
 
         if (argv.pipe) {
             console.clear()
             process.stdout.write(JSON.stringify(list, null, 2))
         } else {
             // console.log(`${JSON.stringify(buildSummary(list), null, 2)}`)
-            console.log(buildSummary(list))
+            //console.log(buildSummary(list))
         }
 
     } catch (error) {
