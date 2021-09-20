@@ -32,7 +32,6 @@ const feeObject = async (tx) => {
     const foundationBalance = BN(await pancakeContract.methods.balanceOf(FOUNDATION_BSC_ADDRESS).call({}, tx.block_height).catch(console.error))
     const efxPcsLpRatio = foundationBalance.div(totalSupply);
 
-
     let txFee = {
         tx_hash: null,
         from_address: null,
@@ -57,7 +56,6 @@ const feeObject = async (tx) => {
         totalCalculatedToWBNB: null,
     }
 
-
     if (tx.transfers_transfer_type == "IN") {
         txFee.swapFrom = 'WBNB'
         txFee.swapTo = 'EFX'
@@ -74,6 +72,7 @@ const feeObject = async (tx) => {
         txFee.swapAmountTo = BN(tx.returnValues.amount0Out ?? 0)
         txFee.onlyWbnb = BN(tx.returnValues.amount0Out ?? 0)
         txFee.onlyEfx = BN(tx.returnValues.amount1In ?? 0)
+
     }
 
     // check if sender is the same as to from_address
@@ -81,6 +80,9 @@ const feeObject = async (tx) => {
     //     console.error(`The sender is not the same as the to from_address: \n${JSON.stringify(tx, null, 2)}`)
     // }
     
+
+    txFeeResponse.transactionHash   = tx.tx_hash
+    txFeeResponse.address           = tx.from_address
 
     // These are calculated from the input values (efx and wbnb respectively)
     txFee.totalFee          = totalFee.mul(txFee.swapAmountFrom)
