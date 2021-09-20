@@ -13,7 +13,8 @@ const pp = require('papaparse')
 // Load environment variables from .env file
 dotenv.config()
 
-const officialBscRpc = 'https://speedy-nodes-nyc.moralis.io/89694b76348bf1a5042c306d/bsc/mainnet/archive'
+// const officialBscRpc = 'https://speedy-nodes-nyc.moralis.io/2135a930504b23f8145f5bdc/bsc/mainnet/archive'
+const officialBscRpc = 'wss://speedy-nodes-nyc.moralis.io/2135a930504b23f8145f5bdc/bsc/mainnet/archive/ws'
 const contractDeploymentBlockHeight = 7580000
 
 const welcomeMessage = `\
@@ -80,7 +81,7 @@ const argv = yargs(hideBin(process.argv))
                         // summary = buildSummary(list)
 
                         // Build summary using csv from covalent with archive node.
-                        const list = await Promise.all(buildCovalentList(data).catch(console.error))
+                        const list = await Promise.all(await buildArchiveList(data).catch(console.error))
                         summary = await buildArchiveList(list)
                     },
                     error: (err, file) => console.log(`Parsing CSV error: ${err}`)
