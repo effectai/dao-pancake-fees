@@ -127,11 +127,11 @@ const archiveFeeObject = async (tx) => {
     }
 
     try {
-        console.log(tx)
+        // console.log(tx)
         const totalSupply = BN(await getTotalSupply(tx))
         const foundationBalance = BN(await getFoundationBalance(tx))
         const efxPcsRatioed = foundationBalance / totalSupply
-        console.log(`Ratio: ${efxPcsRatioed.toString()}, FoundationBalance: ${foundationBalance.toString()} / TotalSupply: ${totalSupply.toString()}, block_height: ${tx.block_height}`)
+        // console.log(`Ratio: ${efxPcsRatioed.toString()}, FoundationBalance: ${foundationBalance.toString()} / TotalSupply: ${totalSupply.toString()}, block_height: ${tx.block_height}`)
     
     
         txFee.block_height = tx.block_height
@@ -151,7 +151,7 @@ const archiveFeeObject = async (tx) => {
         txFee.efxPcsRatioed     = efxPcsRatioed
         txFee.feeRatioCollection = txFee.lpFee
     
-        console.log(txFee.efxPcsRatioed.toString(), txFee.transfer_delta_efx.toString())
+        // console.log(txFee.efxPcsRatioed.toString(), txFee.transfer_delta_efx.toString())
     
         return txFee        
     } catch (error) {
