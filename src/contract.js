@@ -2,6 +2,41 @@ const fs = require('fs')
 const path = require('path')
 const Web3 = require('web3')
 const cliProgress = require('cli-progress')
+const BN = (value) => new Web3.utils.BN(value)
+
+/**
+ * Get totalsupply, with built in redundancy
+ * @returns {Promise} - promise that resolves to totalSupply
+ */
+const totalSupply = async () => {
+    try {
+        const total = await pancakeContract.methods.totalSupply().call({}, tx.block_height)
+        return BN(total)
+    } catch (error) {
+        if(error.message.includes('JSON')){
+            await totalSupply()
+        } else {
+            console.error(error)
+        }
+    }
+}
+
+/**
+ * Get balance of the foundation, with built in redundancy
+ * @returns {Promise} - promise that resolves to BigNumber totalSupply
+ */
+const getFoundationBalance = async () => {
+    try {
+        const balance = await pancakeContract.methods.balanceOf(FOUNDATION_BSC_ADDRESS).call({}, tx.block_height)
+        return BN(balance)
+    } catch (error) {
+        if(error.message.includes('JSON')) {
+            await getFoundationBalance()
+        } else {
+            console.error(error)
+        }
+    }
+}
 
 /**
  * Get events from BSC contract in batches
@@ -100,5 +135,7 @@ const allEvents = async (head, tail, eventName, bsc) => {
 
 module.exports = {
     allEvents,
-    getEvents
+    getEvents,
+    totalSupply,
+    getFoundationBalance
 }
