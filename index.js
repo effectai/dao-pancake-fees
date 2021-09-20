@@ -13,8 +13,8 @@ const pp = require('papaparse')
 // Load environment variables from .env file
 dotenv.config()
 
-// const officialBscRpc = 'https://speedy-nodes-nyc.moralis.io/2135a930504b23f8145f5bdc/bsc/mainnet/archive'
-const officialBscRpc = 'wss://speedy-nodes-nyc.moralis.io/2135a930504b23f8145f5bdc/bsc/mainnet/archive/ws'
+const officialBscRpc = 'https://speedy-nodes-nyc.moralis.io/2135a930504b23f8145f5bdc/bsc/mainnet/archive'
+// const officialBscRpc = 'wss://speedy-nodes-nyc.moralis.io/2135a930504b23f8145f5bdc/bsc/mainnet/archive/ws'
 const contractDeploymentBlockHeight = 7580000
 
 const welcomeMessage = `\
@@ -70,6 +70,7 @@ const argv = yargs(hideBin(process.argv))
                     header: true,           // header of csv file will be used for the obj keys, instead of index
                     delimiter: ',',         // csv delimiter
                     dynamicTyping: true,    // transform values into their corresponding js types
+                    // step: (result) => console.log(result), // callback function for each row
 
                     // results are passed to the callback as an array of objects
                     complete: async (results) => {
@@ -81,8 +82,10 @@ const argv = yargs(hideBin(process.argv))
                         // summary = buildSummary(list)
 
                         // Build summary using csv from covalent with archive node.
-                        const list = await Promise.all(await buildArchiveList(data).catch(console.error))
-                        summary = await buildArchiveList(list)
+                        const promiseList = await buildArchiveList(data).catch(console.error)
+                        const list = await Promise.all(promiseList)
+                        summary =  buildArchiveSummary(list)
+                        console.log(`Summary: ${JSON.stringify(summary, null, 2)}`)
                     },
                     error: (err, file) => console.log(`Parsing CSV error: ${err}`)
                 })
