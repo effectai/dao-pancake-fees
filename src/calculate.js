@@ -1,19 +1,13 @@
 const Web3 = require('web3')
 const fs = require('fs')
 const path = require('path')
-
-// PancakeSwap Contract
-const bsc = new Web3('https://speedy-nodes-nyc.moralis.io/89694b76348bf1a5042c306d/bsc/mainnet/archive')
-const PANCAKESWAP_EFX_ADDRESS = '0xAf1DB0c88a2Bd295F8EdCC8C73f9eB8BcEe6fA8a'
-const FOUNDATION_BSC_ADDRESS = '0xb57a461681e57aa9f6bcb3f41f68cf270466dcae'
-const pancakeswapAbi = JSON.parse(fs.readFileSync(path.join(__dirname, '../abi/pancake_efx_abi.json'), 'utf8'))
-const pancakeContract = new bsc.eth.Contract(pancakeswapAbi, PANCAKESWAP_EFX_ADDRESS)   
+const {getFoundationBalance, getTotalSupply} = require('./contract')
 
 // Utils
-const formatFee = (fee) => Web3.utils.fromWei(fee)
-const buildList = async (data) => data.map(async (tx) => await feeObject(tx))
-const buildArchiveList = async (data) => data.map(async (tx) => await archiveFeeObject(tx))
-const BN = (value) => new Web3.utils.BN(value)
+const formatFee         = (fee) => Web3.utils.fromWei(fee)
+const BN                = (value) => new Web3.utils.BN(value)
+const buildList         = async (data) => data.map(async (tx) => await feeObject(tx))
+const buildArchiveList  = async (data) => data.map(async (tx) => await archiveFeeObject(tx))
 
 // Fee percentages
 const divider  = BN(10000) // divide by 10K to get the right precision
@@ -28,9 +22,10 @@ const cakeFee  = BN(5)  // 0.05%
  * @return {Object} fee object
  */
 const feeObject = async (tx) => {
-    const totalSupply = BN(await pancakeContract.methods.totalSupply().call({}, tx.block_height).catch(console.error))
-    const foundationBalance = BN(await pancakeContract.methods.balanceOf(FOUNDATION_BSC_ADDRESS).call({}, tx.block_height).catch(console.error))
-    const efxPcsLpRatio = foundationBalance.div(totalSupply);
+
+    const foundationBalance = await getFoundationBalance(tx)
+    const totalSupply = await getTotalSupply(tx)
+    const efxPcsRatioed = foundationBalance.div(totalSupply);
 
     let txFee = {
         tx_hash: null,
@@ -86,7 +81,7 @@ const feeObject = async (tx) => {
 
     // These are calculated from the input values (efx and wbnb respectively)
     txFee.totalFee          = totalFee.mul(txFee.swapAmountFrom)
-    txFee.lpFee             = lpFee.mul(txFee.swapAmountFrom.mul(efxPcsLpRatio))
+    txFee.lpFee             = lpFee.mul(txFee.swapAmountFrom.mul(efxPcsRatioed))
     txFee.pcstFee           = pcstFee.mul(txFee.swapAmountFrom)
     txFee.cakeFee           = cakeFee.mul(txFee.swapAmountFrom)
     txFee.totalFeeFormatted = txFee.totalFee
@@ -105,36 +100,71 @@ const feeObject = async (tx) => {
     return txFee
 }
 
+
 const archiveFeeObject = async (tx) => {
-    const totalSupply = BN(await pancakeContract.methods.totalSupply().call({}, tx.block_height).catch(console.error))
-    const foundationBalance = BN(await pancakeContract.methods.balanceOf(FOUNDATION_BSC_ADDRESS).call({}, tx.block_height).catch(console.error))
-    const efxPcsLpRatio = foundationBalance.div(totalSupply);
+    let txFee = {
+        tx_hash: null,
+        from_address: null,
+        totalFee: null,
+        lpFee: null,
+        pcstFee: null,
+        cakeFee: null,
+        swapFrom: null, // WBNB or EFX
+        swapTo: null, // EFX or WBNB
+        swapAmountFrom: BN(0),
+        swapAmountTo: BN(0),
+        totalFeeFormatted: BN(0),
+        lpFeeFormatted: BN(0),
+        efxFeesFormatted: BN(0),
+        wbnbFeesFormatted: BN(0),
+        inOutEfx: BN(0),
+        inOutWbnb: BN(0),
+        onlyEfx: BN(0),
+        onlyWbnb: BN(0),
+        transfer_delta_efx: BN(0),
+        totalCalculatedToEFX: null,
+        totalCalculatedToWBNB: null,
+    }
 
-    let txFee = {}
+    try {
+        console.log(tx)
+        const totalSupply = BN(await getTotalSupply(tx))
+        const foundationBalance = BN(await getFoundationBalance(tx))
+        const efxPcsRatioed = foundationBalance / totalSupply
+        console.log(`Ratio: ${efxPcsRatioed.toString()}, FoundationBalance: ${foundationBalance.toString()} / TotalSupply: ${totalSupply.toString()}, block_height: ${tx.block_height}`)
+    
+    
+        txFee.block_height = tx.block_height
+        txFee.transfer_delta_efx = BN(tx.transfers_delta ?? 0)
+        txFee.tx_hash = tx.tx_hash
+        txFee.from_address = tx.from_address
+    
+        txFee.totalFee          = totalFee.mul(txFee.transfer_delta_efx).div(divider)
+        txFee.pcstFee           = pcstFee.mul(txFee.transfer_delta_efx).div(divider)
+        txFee.cakeFee           = cakeFee.mul(txFee.transfer_delta_efx).div(divider)
 
-    txFee.transfer_delta_efx = BN(tx.transfers_delta ?? 0)
-    txFee.tx_hash = tx.tx_hash
-    txFee.from_address = tx.from_address
-
-    txFee.totalFee          = totalFee.mul(txFee.transfer_delta_efx).div(divider)
-    txFee.lpFee             = lpFee.mul(txFee.transfer_delta_efx.mul(efxPcsLpRatio)).div(divider)
-    txFee.pcstFee           = pcstFee.mul(txFee.transfer_delta_efx).div(divider)
-    txFee.cakeFee           = cakeFee.mul(txFee.transfer_delta_efx).div(divider)
-
-    txFee.totalSupply       = totalSupply
-    txFee.foundationBalance = foundationBalance
-    txFee.efxPcsLpRatio     = efxPcsLpRatio
-    txFee.feeRatioCollection = txFee.lpFee
-
-    console.log(txFee)
-
-    return txFee
+        const deltaRatio         = BN((txFee.transfer_delta_efx * efxPcsRatioed).toString())        
+        txFee.lpFee             = lpFee.mul(deltaRatio).div(divider)
+        
+        txFee.totalSupply       = totalSupply
+        txFee.foundationBalance = foundationBalance
+        txFee.efxPcsRatioed     = efxPcsRatioed
+        txFee.feeRatioCollection = txFee.lpFee
+    
+        console.log(txFee.efxPcsRatioed.toString(), txFee.transfer_delta_efx.toString())
+    
+        return txFee        
+    } catch (error) {
+        console.error(error)
+    }
 }
 
-const buildArchiveSummary = async (data) => {
-    const foundationTotal = data.reduce((acc, val) => acc.add(val.feeRatioCollection), BN(0))
+const buildArchiveSummary = (data) => {
+    const foundationTotal = data.reduce((acc, val) => acc.add(val.lpFee), BN(0))
+    const deltaTotal = data.reduce((acc, val) => acc.add(val.transfer_delta_efx), BN(0))
     return {
-        foundationTotal: foundationTotal
+        foundationTotal: formatFee(foundationTotal.toString()),
+        deltaTotal: formatFee(deltaTotal.toString())
     }
 }
 
