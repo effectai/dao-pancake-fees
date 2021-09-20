@@ -4,7 +4,7 @@ const Web3 = require('web3')
 const yargs = require('yargs')
 const { green } = require('chalk')
 const { hideBin } = require('yargs/helpers')
-const { buildList, buildSummary } = require('./src/calculate')
+const { buildList, buildSummary, feeObject, buildArchiveList, archiveFeeObject, buildArchiveSummary} = require('./src/calculate')
 const { writeToDisk, createHTML } = require('./src/util')
 const { allEvents } = require('./src/contract')
 const dotenv = require('dotenv')
@@ -36,7 +36,7 @@ const argv = yargs(hideBin(process.argv))
         file: true,
         // pipe: false,
         json: true,
-        // csv: false
+        // csv: false,
     })
     .describe('start', 'Start block number').alias('start', 's')
     .describe('end', 'End block number').alias('end', 'e')
@@ -66,21 +66,26 @@ const argv = yargs(hideBin(process.argv))
                 console.log(`Reading CSV file: ${argv.input}`)
                 const csvFile = fs.readFileSync(path.join(__dirname, argv.input), 'utf8')
                 pp.parse(csvFile, {
-                    header: true,
-                    delimiter: ',',
-                    dynamicTyping: true,
-                    // step: (row) => console.log(row),
-                    complete: (results, file) => {
-                        console.log(`Parsing CSV complete: ${file}, \n${JSON.stringify(results)}`)
+                    header: true,           // header of csv file will be used for the obj keys, instead of index
+                    delimiter: ',',         // csv delimiter
+                    dynamicTyping: true,    // transform values into their corresponding js types
+
+                    // results are passed to the callback as an array of objects
+                    complete: async (results) => {
+                        console.log(`Parsing CSV complete: ${argv.input}, rows: ${results.data.length}`)
                         const data = results.data.filter((el) => el.block_height >= 9601569 && el.block_height <= 10789440)
-                        fs.writeFileSync(path.join(__dirname, 'test.json'), JSON.stringify(data))
-                        // console.log(data);
-                        // list = await buildList(input)
-                        // summary = buildSummary(list)             
+
+                        // Build summary using old method
+                        // const list = await Promise.all(await buildList(data))
+                        // summary = buildSummary(list)
+
+                        // Build summary using csv from covalent with archive node.
+                        const list = await Promise.all(buildCovalentList(data).catch(console.error))
+                        summary = await buildArchiveList(list)
                     },
                     error: (err, file) => console.log(`Parsing CSV error: ${err}`)
-            })
-        }
+                })
+            }
 
         } else {
 
