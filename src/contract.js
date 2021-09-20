@@ -4,17 +4,24 @@ const Web3 = require('web3')
 const cliProgress = require('cli-progress')
 const BN = (value) => new Web3.utils.BN(value)
 
+const FOUNDATION_BSC_ADDRESS = '0xb57a461681e57aa9f6bcb3f41f68cf270466dcae'
+const PANCAKESWAP_EFX_ADDRESS = '0xAf1DB0c88a2Bd295F8EdCC8C73f9eB8BcEe6fA8a'
+const pancakeswapAbi = JSON.parse(fs.readFileSync(path.join(__dirname, '../abi/pancake_efx_abi.json'), 'utf8'))
+const officialBscRpc = 'https://speedy-nodes-nyc.moralis.io/2135a930504b23f8145f5bdc/bsc/mainnet/archive/'
+// const officialBscRpc = 'wss://speedy-nodes-nyc.moralis.io/2135a930504b23f8145f5bdc/bsc/mainnet/archive/ws'
+const bscWeb3 = new Web3(officialBscRpc)
+const pcsContract = new bscWeb3.eth.Contract(pancakeswapAbi, PANCAKESWAP_EFX_ADDRESS)
+
 /**
- * Get totalsupply, with built in redundancy
- * @returns {Promise} - promise that resolves to totalSupply
+ * Get totalsupply, with built in redundancy, uses contract.js web instance
+ * @returns {Promise} - promise that resolves to BN(totalSupply)
  */
-const totalSupply = async () => {
+const getTotalSupply = async (tx) => {
     try {
-        const total = await pancakeContract.methods.totalSupply().call({}, tx.block_height)
-        return BN(total)
+        return total = await pcsContract.methods.totalSupply().call({}, tx.block_height)
     } catch (error) {
         if(error.message.includes('JSON')){
-            await totalSupply()
+            await getTotalSupply()
         } else {
             console.error(error)
         }
@@ -23,12 +30,11 @@ const totalSupply = async () => {
 
 /**
  * Get balance of the foundation, with built in redundancy
- * @returns {Promise} - promise that resolves to BigNumber totalSupply
+ * @returns {Promise} - promise that resolves to BN(balance)
  */
-const getFoundationBalance = async () => {
+const getFoundationBalance = async (tx) => {
     try {
-        const balance = await pancakeContract.methods.balanceOf(FOUNDATION_BSC_ADDRESS).call({}, tx.block_height)
-        return BN(balance)
+        return balance = await pcsContract.methods.balanceOf(FOUNDATION_BSC_ADDRESS).call({}, tx.block_height)
     } catch (error) {
         if(error.message.includes('JSON')) {
             await getFoundationBalance()
@@ -136,6 +142,6 @@ const allEvents = async (head, tail, eventName, bsc) => {
 module.exports = {
     allEvents,
     getEvents,
-    totalSupply,
+    getTotalSupply,
     getFoundationBalance
 }
