@@ -9,7 +9,7 @@ const BN                = (value) => new Web3.utils.BN(value)
 const buildList         = async (data) => data.map(async (tx) => await feeObject(tx))
 const buildArchiveList  = async (data) => data.map(async (tx) => await archiveFeeObject(tx))
 
-// Fee percentages
+// Fee percentages, val * xFee / feeDivider
 const feeDivider  = BN(10000) // divide by 10K to get the right precision
 const totalFee = BN(25) // 0.25%
 const lpFee    = BN(17) // 0.17%
