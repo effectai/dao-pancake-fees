@@ -10,7 +10,7 @@ const buildList         = async (data) => data.map(async (tx) => await feeObject
 const buildArchiveList  = async (data) => data.map(async (tx) => await archiveFeeObject(tx))
 
 // Fee percentages
-const divider  = BN(10000) // divide by 10K to get the right precision
+const feeDivider  = BN(10000) // divide by 10K to get the right precision
 const totalFee = BN(25) // 0.25%
 const lpFee    = BN(17) // 0.17%
 const pcstFee  = BN(3)  // 0.03%
@@ -94,8 +94,8 @@ const feeObject = async (tx) => {
         txFee.efxFeesFormatted = txFee.totalFee
     }
 
-    // txFee.totalCalculatedToEFX   = txFee.onlyEfx.mul(lpFee).div(divider)
-    // txFee.totalCalculatedToWBNB  = txFee.onlyWbnb.mul(lpFee).div(divider)
+    // txFee.totalCalculatedToEFX   = txFee.onlyEfx.mul(lpFee).div(feeDivider)
+    // txFee.totalCalculatedToWBNB  = txFee.onlyWbnb.mul(lpFee).div(feeDivider)
 
     return txFee
 }
@@ -127,29 +127,35 @@ const archiveFeeObject = async (tx) => {
     }
 
     try {
+
+        const percentage = BN(100)
+
         // console.log(tx)
-        const totalSupply = BN(await getTotalSupply(tx))
-        const foundationBalance = BN(await getFoundationBalance(tx))
-        const efxPcsRatioed = foundationBalance / totalSupply
-        // console.log(`Ratio: ${efxPcsRatioed.toString()}, FoundationBalance: ${foundationBalance.toString()} / TotalSupply: ${totalSupply.toString()}, block_height: ${tx.block_height}`)
-    
+        const totalSupply = await getTotalSupply(tx)
+        const foundationBalance = await getFoundationBalance(tx)
+
+        const efxPcsRatioed = BN((foundationBalance / totalSupply) * 100) // this becomes a percentage (~90% / ~60%)
+        // const efxPcsRatioed = foundationBalance.div(totalSupply) // This becomes a decimal (fraction) which is not supported by BN
+
+        console.log(`Ratio: ${efxPcsRatioed.toString()}, FoundationBalance: ${foundationBalance.toString()} / TotalSupply: ${totalSupply.toString()}, block_height: ${tx.block_height}`)
     
         txFee.block_height = tx.block_height
         txFee.transfer_delta_efx = BN(tx.transfers_delta ?? 0)
         txFee.tx_hash = tx.tx_hash
         txFee.from_address = tx.from_address
     
-        txFee.totalFee          = totalFee.mul(txFee.transfer_delta_efx).div(divider)
-        txFee.pcstFee           = pcstFee.mul(txFee.transfer_delta_efx).div(divider)
-        txFee.cakeFee           = cakeFee.mul(txFee.transfer_delta_efx).div(divider)
+        txFee.totalFee          = totalFee.mul(txFee.transfer_delta_efx).div(feeDivider)
+        txFee.pcstFee           = pcstFee.mul(txFee.transfer_delta_efx).div(feeDivider)
+        txFee.cakeFee           = cakeFee.mul(txFee.transfer_delta_efx).div(feeDivider)
 
-        const deltaRatio         = BN((txFee.transfer_delta_efx * efxPcsRatioed).toString())        
-        txFee.lpFee             = lpFee.mul(deltaRatio).div(divider)
-        
+        // const deltaRatio         = BN((txFee.transfer_delta_efx * efxPcsRatioed).toString())      
+
+        const deltaRatio        = txFee.transfer_delta_efx.mul(efxPcsRatioed).div(percentage)
+        txFee.lpFee             = lpFee.mul(deltaRatio).div(feeDivider)
+
         txFee.totalSupply       = totalSupply
         txFee.foundationBalance = foundationBalance
         txFee.efxPcsRatioed     = efxPcsRatioed
-        txFee.feeRatioCollection = txFee.lpFee
     
         // console.log(txFee.efxPcsRatioed.toString(), txFee.transfer_delta_efx.toString())
     
@@ -163,8 +169,11 @@ const buildArchiveSummary = (data) => {
     const foundationTotal = data.reduce((acc, val) => acc.add(val.lpFee), BN(0))
     const deltaTotal = data.reduce((acc, val) => acc.add(val.transfer_delta_efx), BN(0))
     return {
-        foundationTotal: formatFee(foundationTotal.toString()),
-        deltaTotal: formatFee(deltaTotal.toString())
+        foundationTotal_EFX: formatFee(foundationTotal.toString()),
+        totalTransactions_EFX: formatFee(deltaTotal.toString()),
+        totalSwaps: data.length,
+        averageEfxFeePerSwap: formatFee(foundationTotal) / data.length,
+
     }
 }
 

@@ -82,7 +82,9 @@ const argv = yargs(hideBin(process.argv))
                         // summary = buildSummary(list)
 
                         // Build summary using csv from covalent with archive node.
-                        const promiseList = await buildArchiveList(data).catch(console.error)
+                        const promiseList = await buildArchiveList(data)
+                                                    .catch(console.error)
+                                                    .finally(console.log('Finish Retrieving list.'))
                         const list = await Promise.all(promiseList)
                         summary =  buildArchiveSummary(list)
                         console.log(`Summary: ${JSON.stringify(summary, null, 2)}`)
