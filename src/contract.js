@@ -14,15 +14,15 @@ const pcsContract = new bscWeb3.eth.Contract(pancakeswapAbi, PANCAKESWAP_EFX_ADD
 
 /**
  * Get totalsupply, with built in redundancy, uses contract.js web instance
- * @param {transaction} tx - transaction object
+ * @param {transaction} blockheight - transaction object
  * @returns {Promise} - promise that resolves to BN(totalSupply)
  */
-const getTotalSupply = async (tx) => {
+const getTotalSupply = async (blockheight) => {
     try {
-        return total = await pcsContract.methods.totalSupply().call({}, tx.block_height)
+        return total = await pcsContract.methods.totalSupply().call({}, blockheight)
     } catch (error) {
         if(error.message.includes('JSON')){
-            await getTotalSupply(tx)
+            await getTotalSupply(blockheight)
         } else {
             console.error(error)
         }
@@ -31,15 +31,15 @@ const getTotalSupply = async (tx) => {
 
 /**
  * Get balance of the foundation, with built in redundancy
- * @param {transaction} tx - transaction object
+ * @param {transaction} blockheight - transaction object
  * @returns {Promise} - promise that resolves to BN(balance)
  */
-const getFoundationBalance = async (tx) => {
+const getFoundationBalance = async (blockheight) => {
     try {
-        return balance = await pcsContract.methods.balanceOf(FOUNDATION_BSC_ADDRESS).call({}, tx.block_height)
+        return balance = await pcsContract.methods.balanceOf(FOUNDATION_BSC_ADDRESS).call({}, blockheight)
     } catch (error) {
         if(error.message.includes('JSON')) {
-            await getFoundationBalance(tx)
+            await getFoundationBalance(blockheight)
         } else {
             console.error(error)
         }

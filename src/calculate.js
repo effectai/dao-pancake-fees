@@ -128,22 +128,22 @@ const archiveFeeObject = async (tx) => {
 
     try {
 
+        txFee.block_height = tx.block_height
+        txFee.transfer_delta_efx = BN(tx.transfers_delta ?? 0)
+        txFee.tx_hash = tx.tx_hash
+        txFee.from_address = tx.from_address
+
         const percentage = BN(100)
 
         // console.log(tx)
-        const totalSupply = await getTotalSupply(tx)
-        const foundationBalance = await getFoundationBalance(tx)
+        const totalSupply = await getTotalSupply(tx.block_height)
+        const foundationBalance = await getFoundationBalance(tx.block_height)
 
         const efxPcsRatioed = BN((foundationBalance / totalSupply) * 100) // this becomes a percentage (~90% / ~60%)
         // const efxPcsRatioed = foundationBalance.div(totalSupply) // This becomes a decimal (fraction) which is not supported by BN
 
         console.log(`Ratio: ${efxPcsRatioed.toString()}, FoundationBalance: ${foundationBalance.toString()} / TotalSupply: ${totalSupply.toString()}, block_height: ${tx.block_height}`)
-    
-        txFee.block_height = tx.block_height
-        txFee.transfer_delta_efx = BN(tx.transfers_delta ?? 0)
-        txFee.tx_hash = tx.tx_hash
-        txFee.from_address = tx.from_address
-    
+        
         txFee.totalFee          = totalFee.mul(txFee.transfer_delta_efx).div(feeDivider)
         txFee.pcstFee           = pcstFee.mul(txFee.transfer_delta_efx).div(feeDivider)
         txFee.cakeFee           = cakeFee.mul(txFee.transfer_delta_efx).div(feeDivider)
@@ -165,14 +165,43 @@ const archiveFeeObject = async (tx) => {
     }
 }
 
-const buildArchiveSummary = (data) => {
+const buildArchiveSummary = async (data) => {
     const foundationTotal = data.reduce((acc, val) => acc.add(val.lpFee), BN(0))
     const deltaTotal = data.reduce((acc, val) => acc.add(val.transfer_delta_efx), BN(0))
+    const maxSwapEfx = data.reduce((a, b) => Web3.utils.BN.max(BN(a.transfer_delta_efx), BN(b.transfer_delta_efx)))
+
+    // const minBlockHeight = data.reduce((acc, val) => Math.min(acc.block_height,val.block_height), 0 )
+    // const maxBlockHeight = data.reduce((acc, val) => Math.max(acc.block_height, val.block_height), 0)
+
+    const minBlockHeight = 9601569
+    const maxBlockHeight = 10789440
+
+    const totalSupplyBegin = await getTotalSupply(minBlockHeight).catch(console.error)
+    const foundationBalanceBegin = await getFoundationBalance(minBlockHeight).catch(console.error)
+    const ratioBegin = foundationBalanceBegin / totalSupplyBegin
+
+    const totalSupplyEnd = await getTotalSupply(maxBlockHeight).catch(console.error)
+    const foundationBalanceEnd = await getFoundationBalance(maxBlockHeight).catch(console.error)
+    const ratioEnd = foundationBalanceEnd / totalSupplyEnd
+
+    const averageRatio = data.reduce((acc, val) => Number(acc) + Number(val.efxPcsRatioed), 0) / data.length
+
+
     return {
         foundationTotal_EFX: formatFee(foundationTotal.toString()),
         totalTransactions_EFX: formatFee(deltaTotal.toString()),
         totalSwaps: data.length,
         averageEfxFeePerSwap: formatFee(foundationTotal) / data.length,
+        averageRatio: averageRatio,
+        startBlock: minBlockHeight,
+        endBlock: maxBlockHeight,
+        maxSwapEfx: maxSwapEfx.toString(),
+        totalSupplyBegin_CakeLP: formatFee(totalSupplyBegin),
+        foundationBalanceBegin_CakeLP: formatFee(foundationBalanceBegin),
+        ratioBegin: ratioBegin,
+        totalSupplyEnd_CakeLP: formatFee(totalSupplyEnd),
+        foundationBalanceEnd_CakeLP: formatFee(foundationBalanceEnd),
+        ratioEnd: ratioEnd,
 
     }
 }
