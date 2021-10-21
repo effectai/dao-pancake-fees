@@ -75,7 +75,8 @@ const argv = yargs(hideBin(process.argv))
                     // results are passed to the callback as an array of objects
                     complete: async (results) => {
                         console.log(`Parsing CSV complete: ${argv.input}, rows: ${results.data.length}`)
-                        const data = results.data.filter((el) => el.block_height >= 9601569 && el.block_height <= 10789440)
+                        const data = results.data.filter((el) => el.block_height >= 11190564 && el.block_height <= 11263059)
+                        // ✦ λ node index.js --start 11190564 --end 11963059 -i covalent.csv 
 
                         // Build summary using old method
                         // const list = await Promise.all(await buildList(data))
@@ -84,7 +85,7 @@ const argv = yargs(hideBin(process.argv))
                         // Build summary using csv from covalent with archive node.
                         const promiseList = await buildArchiveList(data)
                                                     .catch(console.error)
-                                                    .finally(console.log('Finish Retrieving list.'))
+                                                    .finally(console.log('Finish Retrieving list.\nCreating Promiselist'))
                         const list = await Promise.all(promiseList).catch(console.error)
                         summary =  await buildArchiveSummary(list).catch(console.error)
                         console.log(`Summary: ${JSON.stringify(summary, null, 2)}`)
