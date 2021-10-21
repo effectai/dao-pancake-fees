@@ -31,12 +31,12 @@ ${green('Usage: $0 [options]')}
 const argv = yargs(hideBin(process.argv))
     .usage(welcomeMessage)
     .default({
-        start: contractDeploymentBlockHeight, 
-        end: 'latest',
-        rpc: officialBscRpc,
-        file: true,
+        // start: contractDeploymentBlockHeight, 
+        // end: 'latest',
+        // rpc: officialBscRpc,
+        // file: true,
         // pipe: false,
-        json: true,
+        // json: true,
         // csv: false,
     })
     .describe('start', 'Start block number').alias('start', 's')
@@ -56,9 +56,11 @@ const argv = yargs(hideBin(process.argv))
     .epilog(` 🌴`)
     .argv;
 
-(async () => {    
-    try {
-
+    
+    (async () => {    
+        try {
+            const timeout = (ms) => new Promise(resolve => setTimeout(resolve, ms))
+            console.log('start')
         let list, summary
     
         if (argv.input) {
@@ -75,7 +77,7 @@ const argv = yargs(hideBin(process.argv))
                     // results are passed to the callback as an array of objects
                     complete: async (results) => {
                         console.log(`Parsing CSV complete: ${argv.input}, rows: ${results.data.length}`)
-                        const data = results.data.filter((el) => el.block_height >= 11190564 && el.block_height <= 11263059)
+                        const data = results.data.filter((el) => el.block_height >= 11190564 && el.block_height <= 11963059)
                         // ✦ λ node index.js --start 11190564 --end 11963059 -i covalent.csv 
 
                         // Build summary using old method

@@ -168,7 +168,7 @@ const archiveFeeObject = async (tx) => {
 const buildArchiveSummary = async (data) => {
     const foundationTotal = data.reduce((acc, val) => acc.add(val.lpFee), BN(0))
     const deltaTotal = data.reduce((acc, val) => acc.add(val.transfer_delta_efx), BN(0))
-    const maxSwapEfx = data.reduce((a, b) => Web3.utils.BN.max(BN(a.transfer_delta_efx), BN(b.transfer_delta_efx)))
+    // const maxSwapEfx = data.reduce((a, b) => Web3.utils.BN.max(BN(a.transfer_delta_efx), BN(b.transfer_delta_efx)))
 
     // const minBlockHeight = data.reduce((acc, val) => Math.min(acc.block_height,val.block_height), 0 )
     // const maxBlockHeight = data.reduce((acc, val) => Math.max(acc.block_height, val.block_height), 0)
@@ -195,7 +195,7 @@ const buildArchiveSummary = async (data) => {
         averageRatio: averageRatio,
         startBlock: minBlockHeight,
         endBlock: maxBlockHeight,
-        maxSwapEfx: maxSwapEfx.toString(),
+        // maxSwapEfx: maxSwapEfx.toString(),
         totalSupplyBegin_CakeLP: formatFee(totalSupplyBegin),
         foundationBalanceBegin_CakeLP: formatFee(foundationBalanceBegin),
         ratioBegin: ratioBegin,
