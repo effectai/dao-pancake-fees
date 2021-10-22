@@ -2,8 +2,12 @@ const Web3 = require('web3')
 const fs = require('fs')
 const path = require('path')
 const {getFoundationBalance, getTotalSupply} = require('./contract')
+const pThrottle = require('p-throttle')
+// import pThrottle from 'p-throttle'
+
 
 // Utils
+const timeout = (ms) => new Promise(resolve => setTimeout(resolve, ms))
 const formatFee         = (fee) => Web3.utils.fromWei(fee)
 const BN                = (value) => new Web3.utils.BN(value)
 const buildList         = async (data) => data.map(async (tx) => await feeObject(tx))
@@ -173,8 +177,8 @@ const buildArchiveSummary = async (data) => {
     // const minBlockHeight = data.reduce((acc, val) => Math.min(acc.block_height,val.block_height), 0 )
     // const maxBlockHeight = data.reduce((acc, val) => Math.max(acc.block_height, val.block_height), 0)
 
-    const minBlockHeight = 9601569
-    const maxBlockHeight = 10789440
+    const minBlockHeight = 11190564
+    const maxBlockHeight = 11963059
 
     const totalSupplyBegin = await getTotalSupply(minBlockHeight).catch(console.error)
     const foundationBalanceBegin = await getFoundationBalance(minBlockHeight).catch(console.error)

@@ -3,15 +3,26 @@ const path = require('path')
 const Web3 = require('web3')
 const cliProgress = require('cli-progress')
 const BN = (value) => new Web3.utils.BN(value)
+const timeout = (ms) => new Promise(resolve => setTimeout(resolve, ms))
+const pThrottle = require('p-throttle')
+const throttle = pThrottle({interval: 1000, limit: 30})
 
 const FOUNDATION_BSC_ADDRESS = '0xb57a461681e57aa9f6bcb3f41f68cf270466dcae'
 const PANCAKESWAP_EFX_ADDRESS = '0xAf1DB0c88a2Bd295F8EdCC8C73f9eB8BcEe6fA8a'
 const pancakeswapAbi = JSON.parse(fs.readFileSync(path.join(__dirname, '../abi/pancake_efx_abi.json'), 'utf8'))
-const officialBscRpc = 'https://bsc.getblock.io/mainnet/?api_key=d01ef09a-076c-4138-b061-8058326f21ba'
-// const officialBscRpc = 'https://speedy-nodes-nyc.moralis.io/2135a930504b23f8145f5bdc/bsc/mainnet/archive'
+
+
+// const officialBscRpc = 'https://bsc.getblock.io/mainnet/?api_key=d01ef09a-076c-4138-b061-8058326f21ba'
+const officialBscRpc = 'https://speedy-nodes-nyc.moralis.io/2135a930504b23f8145f5bdc/bsc/mainnet/archive'
 // const officialBscRpc = 'https://speedy-nodes-nyc.moralis.io/68954da214ab2367b86a823f/bsc/mainnet/archive'
-// const officialBscRpc = 'wss://speedy-nodes-nyc.moralis.io/2135a930504b23f8145f5bdc/bsc/mainnet/archive/ws'
+
+// const officialBscRpc = 'https://nd-878-837-742.p2pify.com/2cdc22bc479a2d353cd6c68e6a6a182b'
+// const officialBscRpc = 'https://admiring-euler:exert-ladle-retail-pound-blip-refute@nd-878-837-742.p2pify.com/'
+
+// const officialBscRpc = 'https://bsc.getblock.io/mainnet/?api_key=269c13a9-236f-4356-a3f6-c8035fa3bc3c'
+
 const bscWeb3 = new Web3(officialBscRpc)
+// const bscWeb3 = new Web3(new Web3.providers.HttpProvider(officialBscRpc))
 const pcsContract = new bscWeb3.eth.Contract(pancakeswapAbi, PANCAKESWAP_EFX_ADDRESS)
 
 /**
@@ -19,8 +30,9 @@ const pcsContract = new bscWeb3.eth.Contract(pancakeswapAbi, PANCAKESWAP_EFX_ADD
  * @param {transaction} blockheight - transaction object
  * @returns {Promise} - promise that resolves to BN(totalSupply)
  */
-const getTotalSupply = async (blockheight) => {
+const getTotalSupply = throttle(async (blockheight) => {
     try {
+        timeout(200)
         return total = await pcsContract.methods.totalSupply().call({}, blockheight)
     } catch (error) {
         if(error.message.includes('JSON')){
@@ -30,15 +42,16 @@ const getTotalSupply = async (blockheight) => {
             console.error(error)
         }
     }
-}
+})
 
 /**
  * Get balance of the foundation, with built in redundancy
  * @param {transaction} blockheight - transaction object
  * @returns {Promise} - promise that resolves to BN(balance)
  */
-const getFoundationBalance = async (blockheight) => {
+const getFoundationBalance = throttle(async (blockheight) => {
     try {
+        timeout(200)
         return balance = await pcsContract.methods.balanceOf(FOUNDATION_BSC_ADDRESS).call({}, blockheight)
     } catch (error) {
         if(error.message.includes('JSON')) {
@@ -48,7 +61,7 @@ const getFoundationBalance = async (blockheight) => {
             console.error(error)
         }
     }
-}
+})
 
 /**
  * Get events from BSC contract in batches
