@@ -105,3 +105,4 @@ typings/
 
 # data files
 data/*.json
+test.js
