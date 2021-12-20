@@ -12,7 +12,7 @@ name: Deploy on gh-pages
 
 on:
   schedule:
-    - cron: '1/10 * * * *'
+    - cron: '1/5 * * * *'
     # Run this job every 10 minutes.
 
 jobs:
@@ -41,3 +41,14 @@ jobs:
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./dist
+
+
+  slackNotification:
+    name: Slack Notification
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Slack Notification
+      uses: rtCamp/action-slack-notify@v2
+      env:
+        SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
