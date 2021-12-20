@@ -29,10 +29,7 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-node-
       - run: npm ci
-      - run: node index.js --github --ckey ${{ secrets.COVALENT_API_KEY }}
-
-
-
+      - run: node index.js --ckey ${{ secrets.COVALENT_API_KEY }}
 
       - name: deploy
         uses: peaceiris/actions-gh-pages@v3
