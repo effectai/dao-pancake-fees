@@ -1,8 +1,6 @@
 const Web3 = require('web3')
-const fs = require('fs')
 const path = require('path')
 const {getFoundationBalance, getTotalSupply, getBlockDateTime} = require('./contract')
-const pThrottle = require('p-throttle')
 
 // One global variable to keep track of the last block processed
 let lastBlockHeight;
@@ -97,15 +95,15 @@ const buildArchiveSummary = async (data, startBlock, endBlock) => {
 
     const averageRatio = data.reduce((acc, val) => Number(acc) + Number(val.efxPcsRatioed), 0) / data.length
 
-    const now = new Date(Date.now * 1000)
+    const now = new Date(Date.now())
 
     return {
         latestUpdateDateTime:          now.toUTCString(),
         foundationTotal_EFX:           formatFee(foundationTotal.toString()),
         totalTransactions_EFX:         formatFee(deltaTotal.toString()),
         totalSwaps:                    data.length,
-        averageEfxFeePerSwap:          formatFee(foundationTotal) / data.length,
-        averageRatio:                  averageRatio,
+        averageEfxFeePerSwap:          (formatFee(foundationTotal) / data.length) || 0,
+        averageRatio:                  averageRatio || 0,
         startBlock:                    startBlock,
         startBlockDateTime:            await getBlockDateTime(startBlock),
         endBlock:                      endBlock,
