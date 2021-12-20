@@ -103,7 +103,7 @@ const buildArchiveSummary = async (data, startBlock, endBlock) => {
         totalTransactions_EFX:         formatFee(deltaTotal.toString()),
         totalSwaps:                    data.length,
         averageEfxFeePerSwap:          (formatFee(foundationTotal) / data.length) || 0,
-        averageRatio:                  averageRatio || 0,
+        averageRatio:                  averageRatio || ratioEnd,
         startBlock:                    startBlock,
         startBlockDateTime:            await getBlockDateTime(startBlock),
         endBlock:                      endBlock,
