@@ -1,5 +1,6 @@
-const fs = require('fs')
+// const fs = require('fs')
 const path = require('path')
+const fs = require('fs-extra')
 
 const writeToDisk = (name, data) => {
     try {
@@ -124,7 +125,11 @@ const createHTML = (data) => {
   </body>
 </html>
     `
-    fs.writeFileSync(path.join(__dirname, `../${htmlFileName}`), html)
+    fs.mkdirpSync(path.join(__dirname, `../dist/`))
+    fs.copySync(path.join(__dirname, `../dist/`), path.join(__dirname, `../data/`))
+    fs.removeSync(path.join(__dirname, `../dist/`))
+    fs.mkdirpSync(path.join(__dirname, `../dist/`))
+    fs.writeFileSync(path.join(__dirname, `../dist/${htmlFileName}`), html)
     console.log(`📄 Saved to ${htmlFileName}`)
 }
 
