@@ -5,7 +5,7 @@ const fs = require('fs-extra')
 const writeToDisk = (name, data) => {
     try {
         const jsonFileName = `${name}_${Date.now()}.json`
-        fs.writeFileSync(path.join(__dirname, `../data/${jsonFileName}`), JSON.stringify(data, null, 2))
+        fs.writeFileSync(path.join(__dirname, `../dist/${jsonFileName}`), JSON.stringify(data, null, 2))
         console.log(`📄 Saved to ${jsonFileName}`)
     } catch (error) {
         console.error()
@@ -129,7 +129,8 @@ const createHTML = (data) => {
     fs.copySync(path.join(__dirname, `../dist/`), path.join(__dirname, `../data/`))
     fs.removeSync(path.join(__dirname, `../dist/`))
     fs.mkdirpSync(path.join(__dirname, `../dist/`))
-    fs.writeFileSync(path.join(__dirname, `../dist/${htmlFileName}`), html)
+    fs.writeFileSync(path.join(__dirname, `../dist/index.html`), html)
+    fs.writeFileSync(path.join(__dirname, `../dist/index.json`), JSON.stringify(data))
     console.log(`📄 Saved to ${htmlFileName}`)
 }
 

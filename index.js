@@ -1,12 +1,11 @@
-const fs = require('fs')
+const fs = require('fs-extra')
 const path = require('path')
-const Web3 = require('web3')
 const yargs = require('yargs')
 const { green } = require('chalk')
 const { hideBin } = require('yargs/helpers')
 const { buildArchiveList, buildArchiveSummary, } = require('./src/calculate')
-const { writeToDisk, createHTML } = require('./src/util')
-const { allEvents, getLatestBlockNumber } = require('./src/contract')
+const { createHTML } = require('./src/util')
+const { getLatestBlockNumber } = require('./src/contract')
 const dotenv = require('dotenv')
 const pp = require('papaparse')
 
@@ -64,8 +63,18 @@ const argv = yargs(hideBin(process.argv))
 (async () => {    
     try {
 
+    let startBlock
+
+    if (argv.start) {
+        startBlock = argv.start
+    } else {
+        const startDist = fs.readFileSync(path.join(__dirname, '/dist/index.json'))
+        const startJson = JSON.parse(startDist)
+        startBlock = startJson.endBlock
+    }
+    
     const endBlock = argv.end === 'latest' ? await getLatestBlockNumber() : argv.end
-    const covalentUrl = `https://api.covalenthq.com/v1/56/address/${pcsAddress}/transfers_v2/?quote-currency=USD&format=CSV&contract-address=${efxAddress}&page-size=1000000&ending-block=${endBlock}&starting-block=${argv.start}&key=${argv.ckey}`
+    const covalentUrl = `https://api.covalenthq.com/v1/56/address/${pcsAddress}/transfers_v2/?quote-currency=USD&format=CSV&contract-address=${efxAddress}&page-size=1000000&ending-block=${endBlock}&starting-block=${startBlock}&key=${argv.ckey}`
 
     const { got } = await import('got')
     const response = await got(covalentUrl)
@@ -87,11 +96,11 @@ const argv = yargs(hideBin(process.argv))
                                             .catch(console.error)
                                             .finally(console.log('Finish Retrieving list.\nCreating Promiselist'))
                 const list = await Promise.all(promiseList).catch(console.error)
-                const summary =  await buildArchiveSummary(list, argv.start, endBlock).catch(console.error)
+                const summary =  await buildArchiveSummary(list, startBlock, endBlock).catch(console.error)
 
                 // Save html page and json to disk.
                 createHTML(summary)
-                writeToDisk(summary)
+                // writeToDisk(summary)
 
                 console.log(`Summary: ${JSON.stringify(summary, null, 2)}`)
             },
