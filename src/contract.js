@@ -17,7 +17,14 @@ const bscWeb3 = new Web3(officialBscRpc)
 const pcsContract = new bscWeb3.eth.Contract(pancakeswapAbi, PANCAKESWAP_EFX_ADDRESS)
 
 /**
- * Get block
+ * Method to return the blocknumber for the latest block
+ */
+const getLatestBlockNumber = async () => {
+    return await bscWeb3.eth.getBlockNumber()
+}
+
+/**
+ * Get Date time of block, and return as UTC
  */
 const getBlockDateTime = async (blockNumber) => {
     const jsonBlock = await bscWeb3.eth.getBlock(blockNumber).catch(console.error)
@@ -166,5 +173,6 @@ module.exports = {
     getEvents,
     getTotalSupply,
     getFoundationBalance,
-    getBlockDateTime
+    getBlockDateTime,
+    getLatestBlockNumber
 }
