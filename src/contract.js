@@ -19,9 +19,11 @@ const pcsContract = new bscWeb3.eth.Contract(pancakeswapAbi, PANCAKESWAP_EFX_ADD
 /**
  * Get block
  */
-const getBlock = async (blockNumber) => {
-    const block = await bscWeb3.eth.getBlock(blockNumber).catch(console.error)
-    const milliseconds = block.timestamp * 1000
+const getBlockDateTime = async (blockNumber) => {
+    const jsonBlock = await bscWeb3.eth.getBlock(blockNumber).catch(console.error)
+    const block = JSON.stringify(jsonBlock)
+    console.log(`Number: ${blockNumber}`, `Block: ${jsonBlock.timestamp}`)
+    const milliseconds = jsonBlock.timestamp * 1000
     const date = new Date(milliseconds)
     return date.toUTCString()
 }
@@ -164,5 +166,5 @@ module.exports = {
     getEvents,
     getTotalSupply,
     getFoundationBalance,
-    getBlockDatetime
+    getBlockDateTime
 }

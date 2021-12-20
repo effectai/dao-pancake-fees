@@ -4,13 +4,11 @@ const Web3 = require('web3')
 const yargs = require('yargs')
 const { green } = require('chalk')
 const { hideBin } = require('yargs/helpers')
-const { buildList, buildSummary, feeObject, buildArchiveList, archiveFeeObject, buildArchiveSummary} = require('./src/calculate')
+const { buildArchiveList, buildArchiveSummary} = require('./src/calculate')
 const { writeToDisk, createHTML } = require('./src/util')
 const { allEvents } = require('./src/contract')
 const dotenv = require('dotenv')
 const pp = require('papaparse')
-// import got from 'got'
-// const got = import('got')
 
 // Load environment variables from .env file
 dotenv.config()
@@ -55,7 +53,6 @@ const argv = yargs(hideBin(process.argv))
     .describe('csv', 'Output as csv').alias('csv', 'c').boolean('csv')
     .describe('ckey', 'Contract key').alias('ckey', 'k').string('ckey')
     .describe('bscweb', 'BSC Web3 instance').alias('bscweb', 'w').string('bscweb')
-    // .describe('github', 'Github action').alias('github', 'g').string('github')
     // .conflicts('json', 'csv')
     // .conflicts('pipe', 'file')
     .alias('v', 'version')
@@ -91,7 +88,7 @@ const argv = yargs(hideBin(process.argv))
                                             .catch(console.error)
                                             .finally(console.log('Finish Retrieving list.\nCreating Promiselist'))
                 const list = await Promise.all(promiseList).catch(console.error)
-                summary =  await buildArchiveSummary(list).catch(console.error)
+                summary =  await buildArchiveSummary(list, argv.start, argv.end).catch(console.error)
                 console.log(`Summary: ${JSON.stringify(summary, null, 2)}`)
             },
             error: (err, file) => console.log(`Parsing CSV error: ${err}`)
@@ -137,7 +134,7 @@ const argv = yargs(hideBin(process.argv))
         const result = await allEvents(startBlock, endBlock, 'Swap', bscWeb3)
         fs.writeFileSync(path.join(__dirname, `/data/raw_rpc_swap_data_${Date.now()}.json`), JSON.stringify(result, null, 2))
 
-        list = await buildList(result)
+        // list = await buildList(result)
     }
 
     if (argv.file) {

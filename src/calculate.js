@@ -1,7 +1,7 @@
 const Web3 = require('web3')
 const fs = require('fs')
 const path = require('path')
-const {getFoundationBalance, getTotalSupply, getBlockDatetime} = require('./contract')
+const {getFoundationBalance, getTotalSupply, getBlockDateTime} = require('./contract')
 const pThrottle = require('p-throttle')
 
 // One global variable to keep track of the last block processed
@@ -10,7 +10,6 @@ let lastBlockHeight;
 // Utils
 const formatFee         = (fee) => Web3.utils.fromWei(fee)
 const BN                = (value) => new Web3.utils.BN(value)
-const buildList         = async (data) => data.map(async (tx) => await feeObject(tx))
 const buildArchiveList  = async (data) => data.map(async (tx) => await archiveFeeObject(tx))
 
 // Fee percentages, val * xFee / feeDivider
@@ -108,9 +107,9 @@ const buildArchiveSummary = async (data, startBlock, endBlock) => {
         averageEfxFeePerSwap:          formatFee(foundationTotal) / data.length,
         averageRatio:                  averageRatio,
         startBlock:                    startBlock,
-        startBlockDateTime:            getBlockDatetime(startBlock),
+        startBlockDateTime:            await getBlockDateTime(startBlock),
         endBlock:                      endBlock,
-        endBlockDateTime:              getBlockDatetime(endBlock),
+        endBlockDateTime:              await getBlockDateTime(endBlock),
         totalSupplyBegin_CakeLP:       formatFee(totalSupplyBegin),
         foundationBalanceBegin_CakeLP: formatFee(foundationBalanceBegin),
         ratioBegin:                    ratioBegin,
@@ -121,10 +120,7 @@ const buildArchiveSummary = async (data, startBlock, endBlock) => {
 }
 
 module.exports = {
-    feeObject,
-    buildList,
     buildArchiveSummary,
     archiveFeeObject,
     buildArchiveList,
-    buildSummary
 }
