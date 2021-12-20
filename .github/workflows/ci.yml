@@ -5,15 +5,15 @@ name: Deploy on gh-pages
 #     branches:
 #       - main
 
-# on:
-#   schedule:
-#     - cron: '0 12 * * 5'
-#     # Run this job every Friday at 12 o'clock UTC.
-
 on:
   schedule:
-    - cron: '1/5 * * * *'
-    # Run this job every 10 minutes.
+    - cron: '0 10 * * 5'
+    # Run this job every Friday at 12 o'clock UTC.
+
+# on:
+#   schedule:
+#     - cron: '1/5 * * * *'
+#     # Run this job every 10 minutes.
 
 jobs:
   deploy:
