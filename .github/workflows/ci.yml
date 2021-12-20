@@ -1,14 +1,14 @@
 name: Deploy on gh-pages
 
-# on:
-#   push:
-#     branches:
-#       - main
-
 on:
-  schedule:
-    - cron: '0 12 * * 5'
-    # Run this job every Friday at 12 o'clock UTC.
+  push:
+    branches:
+      - main
+
+# on:
+#   schedule:
+#     - cron: '0 12 * * 5'
+#     # Run this job every Friday at 12 o'clock UTC.
 
 jobs:
   deploy:
