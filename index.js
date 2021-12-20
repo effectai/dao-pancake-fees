@@ -4,9 +4,9 @@ const Web3 = require('web3')
 const yargs = require('yargs')
 const { green } = require('chalk')
 const { hideBin } = require('yargs/helpers')
-const { buildArchiveList, buildArchiveSummary} = require('./src/calculate')
+const { buildArchiveList, buildArchiveSummary, } = require('./src/calculate')
 const { writeToDisk, createHTML } = require('./src/util')
-const { allEvents } = require('./src/contract')
+const { allEvents, getLatestBlockNumber } = require('./src/contract')
 const dotenv = require('dotenv')
 const pp = require('papaparse')
 
@@ -63,9 +63,9 @@ const argv = yargs(hideBin(process.argv))
     
 (async () => {    
     try {
-    let list, summary
 
-    const covalentUrl = `https://api.covalenthq.com/v1/56/address/${pcsAddress}/transfers_v2/?quote-currency=USD&format=CSV&contract-address=${efxAddress}&page-size=1000000&ending-block=${argv.end}&starting-block=${argv.start}&key=${argv.ckey}`
+    const endBlock = argv.end === 'latest' ? await getLatestBlockNumber() : argv.end
+    const covalentUrl = `https://api.covalenthq.com/v1/56/address/${pcsAddress}/transfers_v2/?quote-currency=USD&format=CSV&contract-address=${efxAddress}&page-size=1000000&ending-block=${endBlock}&starting-block=${argv.start}&key=${argv.ckey}`
 
     const { got } = await import('got')
     const response = await got(covalentUrl)
@@ -80,76 +80,24 @@ const argv = yargs(hideBin(process.argv))
 
             // results are passed to the callback as an array of objects
             complete: async (results) => {
-                console.log(`Parsing CSV complete: ${covalentUrl}, rows: ${results.data.length}`)
+                console.log(`Retrieval from Covalent complete. Number of rows: ${results.data.length}`)
 
                 // Build summary using csv from covalent with archive node.
-                // console.log(results)
                 const promiseList = await buildArchiveList(results.data)
                                             .catch(console.error)
                                             .finally(console.log('Finish Retrieving list.\nCreating Promiselist'))
                 const list = await Promise.all(promiseList).catch(console.error)
-                summary =  await buildArchiveSummary(list, argv.start, argv.end).catch(console.error)
+                const summary =  await buildArchiveSummary(list, argv.start, endBlock).catch(console.error)
+
+                // Save html page and json to disk.
+                createHTML(summary)
+                writeToDisk(summary)
+
                 console.log(`Summary: ${JSON.stringify(summary, null, 2)}`)
             },
             error: (err, file) => console.log(`Parsing CSV error: ${err}`)
         })        
     }
-
-    if (argv.input) {
-        
-        if(argv.input.includes('csv')){
-            pp.parse(argv.input, {
-                header: true,           // header of csv file will be used for the obj keys, instead of index
-                delimiter: ',',         // csv delimiter
-                dynamicTyping: true,    // transform values into their corresponding js types
-                // step: (result) => console.log(result), // callback function for each row
-
-                // results are passed to the callback as an array of objects
-                complete: async (results) => {
-                    console.log(`Parsing CSV complete: ${argv.input}, rows: ${results.data.length}`)
-                    const data = results.data.filter((el) => el.block_height >= 11190564 && el.block_height <= 11963059)
-
-                    // Build summary using csv from covalent with archive node.
-                    const promiseList = await buildArchiveList(data)
-                                                .catch(console.error)
-                                                .finally(console.log('Finish Retrieving list.\nCreating Promiselist'))
-                    const list = await Promise.all(promiseList).catch(console.error)
-                    summary =  await buildArchiveSummary(list).catch(console.error)
-                    console.log(`Summary: ${JSON.stringify(summary, null, 2)}`)
-                },
-                error: (err, file) => console.log(`Parsing CSV error: ${err}`)
-            })
-        }
-
-    } 
-    
-    if (argv.bscweb){
-
-        const bscWeb3 = new Web3(process.env.BSC_RPC || argv.rpc)
-        const latestBlockHeight = (await bscWeb3.eth.getBlock('latest')).number
-        const startBlock = argv.start
-        const endBlock = argv.end == 'latest' ? latestBlockHeight : argv.end
-
-        // Only 'Swap' events are relevant for now.
-        const result = await allEvents(startBlock, endBlock, 'Swap', bscWeb3)
-        fs.writeFileSync(path.join(__dirname, `/data/raw_rpc_swap_data_${Date.now()}.json`), JSON.stringify(result, null, 2))
-
-        // list = await buildList(result)
-    }
-
-    if (argv.file) {
-        writeToDisk('calculated_fee_swaps', argv, list)
-    }
-
-    if (argv.html) {
-        const summary = buildSummary(list)
-        createHTML(summary)
-    }
-
-    if (argv.pipe) {
-        console.clear()
-        process.stdout.write(JSON.stringify(list, null, 2))
-    } 
 
 } catch (error) {
     console.error(error)
