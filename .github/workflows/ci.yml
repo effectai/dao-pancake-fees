@@ -1,4 +1,4 @@
-name: Deploy on gh-pages
+name: Run Calculation, Deploy and Commit.
 
 # on:
 #   push:
@@ -9,11 +9,6 @@ on:
   schedule:
     - cron: '0 10 * * 5'
     # Run this job every Friday at 12 o'clock UTC.
-
-# on:
-#   schedule:
-#     - cron: '1/5 * * * *'
-#     # Run this job every 10 minutes.
 
 jobs:
   deploy:
@@ -42,6 +37,13 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./dist
 
+      - run: cp index.json "$(date).json"
+
+      - name: Add & Commit
+        uses: EndBug/add-and-commit@v7.5.0
+        with: 
+          default_author: github_actions
+          message: Commit PCS Fee Calculation
 
   slackNotification:
     name: Slack Notification
