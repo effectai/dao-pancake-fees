@@ -11,36 +11,22 @@ $ node index.js -h
 Effect Network: Pancake Liquidity Pool Fee Calculator 💸💸💸
 Usage: index.js [options]
 
-
-Options:
-  -s, --start    Start block number                           [default: 7580000]
-  -e, --end      End block number                            [default: "latest"]
-  -r, --rpc      BSC RPC endpoint [default: "https://bsc-dataseed.binance.org/"]
-  -i, --input    Input file <path>
-  -f, --file     Save file to disk                     [boolean] [default: true]
-  -m, --html     Create HTML report                                    [boolean]
-  -p, --pipe     Pipe to stdout                                        [boolean]
-  -j, --json     Output as json                        [boolean] [default: true]
-  -c, --csv      Output as csv                                         [boolean]
-  -h, --help     Show help                                             [boolean]
-  -v, --version  Show version number                                   [boolean]
-
  🌴
 ```
 ---
 
+# Dao_Pancake_Fee
+View the latest calculations at [Dao Pancake Fee](https://effectai.github.io/dao-pancake-fees/)
 # 📓 Why?
-This tool is used to calculate the pancakeSwap fees for Effect Network.
+This tool is used to calculate the PancakeSwap fees for Effect Network.
 
 # 🌟 Features
 - Retrieve a detailed overview of the pancake swap fees collected by Effect in the liquidity Pool
-- Output to json
-- Output to csv (import into spreadsheet)
-- Generate html report
+- Generate HTML report
 - Search within ranges
 
 # 📌 Requirements
-You will need node and npm in order to get this progam running. 
+You will need node and npm in order to get this program running. 
 You can download them here: https://nodejs.org/en/download/
 
 # 🚀 Quick and dirty
