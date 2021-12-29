@@ -106,3 +106,4 @@ typings/
 # data files
 data/*.json
 test.js
+.vscode/settings.json
