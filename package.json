@@ -4,7 +4,8 @@
   "main": "index.js",
   "license": "Apache 2.0",
   "scripts": {
-    "main": "node index.js --github"
+    "main": "node index.js",
+    "sendfee": "node src/mstx.js"
   },
   "dependencies": {
     "chalk": "^4.1.1",
