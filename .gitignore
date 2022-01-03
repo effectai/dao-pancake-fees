@@ -107,3 +107,5 @@ typings/
 data/*.json
 test.js
 .vscode/settings.json
+keys
+notes/
