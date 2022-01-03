@@ -1,23 +1,34 @@
 const fs = require('fs-extra');
 const path = require('path')
-const dotenv = require('dotenv');
 const yargs = require('yargs');
 const { hideBin } = require('yargs/helpers');
 const {Api, JsonRpc, RpcError } = require('eosjs');
 const { TextDecoder, TextEncoder } = require('util');
 const { JsSignatureProvider } = require('eosjs/dist/eosjs-jssig')
 const fetch = require('node-fetch')
+// const { App } = require('@slack/bolt');
 
 const argv = yargs(hideBin(process.argv))
-    .default({
-        privatekey: ""
-    })
     .describe('privatekey', 'PrivateKey for EOS signature provider').alias('privatekey', 'p')
+    .describe('slacktoken', 'Slack Token').alias('slacktoken', 't')
+    .describe('slacksecret', 'Slack Secret').alias('slacksecret', 's')
+    .demandOption(['privatekey', 'slacktoken', 'slacksecret'], 'privatekey, slacktoken, slacksecret is required')
     .argv
 
-// TODO Change Default Private key to something that is correct.
-const defaultPrivateKey = argv.privatekey; // bob
-const signatureProvider = new JsSignatureProvider([defaultPrivateKey]);
+/**
+ * Build Slack Client
+ */
+// const slack = new App({
+//     signingSecret: argv.slacksecret,
+//     token: argv.slacktoken,
+// });
+
+/**
+ * Build EOS Client
+ */
+console.log(argv.privatekey)
+const signatureProvider = new JsSignatureProvider([argv.privatekey]);
+console.log(signatureProvider)
 
 const rpc_url = 'https://eos.greymass.com'
 const rpc = new JsonRpc(rpc_url, { fetch })
@@ -31,15 +42,22 @@ const api = new Api({
 const fileBuffer = fs.readFileSync(path.join(__dirname, '../data/index.json'))
 const fileJson = JSON.parse(fileBuffer)
 
-// CREATE ACTION TO PROPOSE a new EFX transaction to the dao.
+
+const expireTranscation = (hours) => {
+    const expire = new Date((new Date()).getTime() + hours * 60 * 60 * 1000); // expire n hours from now
+    return expire.toISOString().slice(0, -5); // remove milliseconds and 'Z' from ISO string
+}
+
+const transactionName = 'pancake-swap-fee' //name for the tx
+
+// Create proposal for transfer from bsc.efx -> feepool.efx
 const actions = [{
-
     account: 'effecttokens', // Name of the contract
-    name: 'transfer', // Name of the action
+    name: 'transfer',        // Name of the action
 
-    // Agent who will execute this action
+    // Agent who will execute this action, bsc.efx is the from address.
     authorization: [{
-        actor: 'signer1.efx',
+        actor: 'bsc.efx',
         permission: 'active',
     }],
 
@@ -48,26 +66,22 @@ const actions = [{
         "from": "bsc.efx", // From BSC Pool
         "to": "feepool.efx", // To Dao Fee Pool 
         "quantity": `${fileJson.foundationTotal_EFX} EFX`, 
-        "memo": `Pancake Swap Fees, StartBlock: ${fileJson.startBlock}, EndBlock: ${fileJson.endBlock}`
-    },
+        "memo": "Pancake Swap Fee"      
+    }
 }];
 
-(async () => {
-    try {
-        const serialized_actions = await api.serializeActions(actions)
+const main = async () => {
 
-        // Expire 24 hours from now
-        const addHours = (hours) => new Date((new Date()).getTime() + hours * 60 * 60 * 1000);
-        const expiration24Hours = addHours(24).toISOString().slice(0, -5); // remove milliseconds and Z from ISO string
-        console.log(`Expiration Time: ${expiration24Hours}`)
-    
-        // BUILD THE MULTISIG PROPOSE TRANSACTION
+        const serialized_actions = await api.serializeActions(actions).catch(error => console.log(error));
+        // console.log(`\nserialized_actions: ${JSON.stringify(serialized_actions)}\n`);
+
+        // Specify the required agents for this multi-signature transactions
         const proposeInput = {
-            proposer: 'singer1.efx',
-            proposal_name: 'transfer',
+            proposer: 'pancakeffect',
+            proposal_name: transactionName,
             requested: [
                 {
-                    actor: 'singer1.efx',
+                    actor: 'signer1.efx',
                     permission: 'active'
                 },
                 {
@@ -80,7 +94,7 @@ const actions = [{
                 }
             ],
             trx: {            
-                expiration: expiration24Hours, 
+                expiration: expireTransaction(72), // 24 hours from now
                 ref_block_num: 0,
                 ref_block_prefix: 0,
                 max_net_usage_words: 0,
@@ -91,14 +105,14 @@ const actions = [{
                 transaction_extensions: []
             }
         };
-    
-        //PROPOSE THE TRANSACTION
-        const result = await api.transact({
+
+        // Sign and broadcast the proposal transaction to msig for signers[1,2,3] to sign.
+        const transaction = await api.transact({
             actions: [{
                 account: 'eosio.msig',
                 name: 'propose',
                 authorization: [{
-                    actor: 'singer1.efx',
+                    actor: 'pancakeffect',
                     permission: 'active',
                 }],
                 data: proposeInput,
@@ -108,14 +122,23 @@ const actions = [{
             expireSeconds: 30,
             broadcast: true,
             sign: true
+        }).catch(error => {
+            console.log(`\nProposeError: ${error}\n`)
+            if (error instanceof RpcError) {
+                console.log(error)
+            }
         });
     
-        console.log(result)        
-    } catch (error) {
-        console.error(`\nCaught Exception: ${error}`)
+        console.log(`\nTransaction: ${JSON.stringify(transaction)}\n`);   
 
-        if (error instanceof RpcError) {
-            console.log(JSON.stringify(error.json, null, 2))
-        }
-    }
-})();
+        // // send link to slack with transaction.transaction_id
+        // const result = await slack.client.chat.postMessage({
+        //     token: argv.slacktoken,
+        //     channel: '#proj-masterchef',
+        //     text: `Please sign the transaction: https://bloks.io/msig/pancakeffect/${transactionName}`
+        // }).catch(error => console.log(error));
+
+};
+
+
+main()
