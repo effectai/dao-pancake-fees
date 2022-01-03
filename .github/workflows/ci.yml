@@ -37,7 +37,9 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./dist
 
-      - run: cp index.json "$(date).json"
+      - run: node src/mstx.js -p ${{ secrets.PRIVATE_KEY_PANCAKE }} -t ${{ secrets.SLACK_TOKEN }} -s ${{ secrets.SLACK_SECRET }}
+
+      - run: cp dist/index.json "data/$(date).json"
 
       - name: Add & Commit
         uses: EndBug/add-and-commit@v7.5.0
@@ -56,4 +58,5 @@ jobs:
         SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
         SLACK_USERNAME: PCS_Bot
         SLACK_ICON: https://effect.network/img/logo/logo_icon.png
-        SLACK_MESSAGE: 'Updated Pancake Swap Fee Page: https://effectai.github.io/dao-pancake-fees/ :rocket:'
+        SLACK_MESSAGE: 'Updated Pancake Swap Fee Page: https://effectai.github.io/dao-pancake-fees/ :rocket:\nPlease sign transaction: https://bloks.io/msig/pancakeffect/pancake-swap-fee'
+
