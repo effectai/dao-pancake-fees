@@ -70,7 +70,7 @@ const argv = yargs(hideBin(process.argv))
     } else {
         const startDist = fs.readFileSync(path.join(__dirname, '/dist/index.json'))
         const startJson = JSON.parse(startDist)
-        startBlock = startJson.endBlock
+        startBlock = startJson.startBlock
     }
     
     const endBlock = argv.end === 'latest' ? await getLatestBlockNumber() : argv.end
