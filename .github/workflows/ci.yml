@@ -1,14 +1,14 @@
 name: Run Calculation, Deploy and Commit.
 
-on:
-  push:
-    branches:
-      - main
-
 # on:
-#   schedule:
-#     - cron: '0 10 * * 5'
-#     # Run this job every Friday at 12 o'clock UTC.
+#   push:
+#     branches:
+#       - main
+
+on:
+  schedule:
+    - cron: '0 10 * * 5'
+    # Run this job every Friday at 12 o'clock UTC.
 
 jobs:
   deploy:
@@ -58,5 +58,5 @@ jobs:
         SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
         SLACK_USERNAME: PCS_Bot
         SLACK_ICON: https://effect.network/img/logo/logo_icon.png
-        SLACK_MESSAGE: 'Updated Pancake Swap Fee Page: https://effectai.github.io/dao-pancake-fees/ :rocket:\nPlease sign transaction: https://bloks.io/msig/pancakeffect/pancake-swap-fee'
+        SLACK_MESSAGE: 'Updated Pancake Swap Fee Page: https://effectai.github.io/dao-pancake-fees/ :rocket: Please sign transaction: https://bloks.io/msig/pancakeffect/https://bloks.io/msig/pancakeffect/pancakefee'
 
