@@ -12,7 +12,7 @@ const argv = yargs(hideBin(process.argv))
     .describe('privatekey', 'PrivateKey for EOS signature provider').alias('privatekey', 'p')
     .describe('slacktoken', 'Slack Token').alias('slacktoken', 't')
     .describe('slacksecret', 'Slack Secret').alias('slacksecret', 's')
-    .demandOption(['privatekey', 'slacktoken', 'slacksecret'], 'privatekey, slacktoken, slacksecret is required')
+    .demandOption(['privatekey'], 'privatekey is required')
     .argv
 
 /**
@@ -43,7 +43,7 @@ const fileBuffer = fs.readFileSync(path.join(__dirname, '../data/index.json'))
 const fileJson = JSON.parse(fileBuffer)
 
 
-const expireTranscation = (hours) => {
+const expireTransaction = (hours) => {
     const expire = new Date((new Date()).getTime() + hours * 60 * 60 * 1000); // expire n hours from now
     return expire.toISOString().slice(0, -5); // remove milliseconds and 'Z' from ISO string
 }
