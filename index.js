@@ -8,6 +8,7 @@ const { createHTML } = require('./src/util')
 const { getLatestBlockNumber } = require('./src/contract')
 const dotenv = require('dotenv')
 const pp = require('papaparse')
+const axios = require('axios').default
 
 // Load environment variables from .env file
 dotenv.config()
@@ -73,15 +74,17 @@ const argv = yargs(hideBin(process.argv))
         startBlock = startJson.startBlock
     }
     
-    const endBlock = argv.end === 'latest' ? await getLatestBlockNumber() : argv.end
+    const endBlock = argv.end == 'latest' ? await getLatestBlockNumber() : argv.end
     const covalentUrl = `https://api.covalenthq.com/v1/56/address/${pcsAddress}/transfers_v2/?quote-currency=USD&format=CSV&contract-address=${efxAddress}&page-size=1000000&ending-block=${endBlock}&starting-block=${startBlock}&key=${argv.ckey}`
 
-    const { got } = await import('got')
-    const response = await got(covalentUrl)
+    // const { got } = await import('got')
+    // const response = await got(covalentUrl)
+    const response = await axios.get(covalentUrl)
+    console.log(response)
     
     if (argv.ckey) {
         console.log(`Fetching covalent data from ${covalentUrl}`);
-        pp.parse(response.body, {
+        pp.parse(response.data, {
             header: true,                               // header of csv file will be used for the obj keys, instead of index
             delimiter: ',',                             // csv delimiter
             dynamicTyping: true,                        // transform values into their corresponding js types
