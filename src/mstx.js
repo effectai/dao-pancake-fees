@@ -48,7 +48,7 @@ const expireTransaction = (hours) => {
     return expire.toISOString().slice(0, -5); // remove milliseconds and 'Z' from ISO string
 }
 
-const transactionName = 'pancake-swap-fee' //name for the tx
+const transactionName = 'pancakefee' //name for the tx
 
 // Create proposal for transfer from bsc.efx -> feepool.efx
 const actions = [{
@@ -72,7 +72,7 @@ const actions = [{
 
 const main = async () => {
 
-        const serialized_actions = await api.serializeActions(actions).catch(error => console.log(error));
+        const serialized_actions = await api.serializeActions(actions).catch(error => console.error(error));
         // console.log(`\nserialized_actions: ${JSON.stringify(serialized_actions)}\n`);
 
         // Specify the required agents for this multi-signature transactions
