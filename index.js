@@ -77,10 +77,12 @@ const argv = yargs(hideBin(process.argv))
     const endBlock = argv.end == 'latest' ? await getLatestBlockNumber() : argv.end
     const covalentUrl = `https://api.covalenthq.com/v1/56/address/${pcsAddress}/transfers_v2/?quote-currency=USD&format=CSV&contract-address=${efxAddress}&page-size=1000000&ending-block=${endBlock}&starting-block=${startBlock}&key=${argv.ckey}`
 
-    // const { got } = await import('got')
-    // const response = await got(covalentUrl)
+    console.log(`
+    startBlock: ${startBlock}
+    endBlock: ${endBlock}
+    covalentUrl: ${covalentUrl}
+    `)
     const response = await axios.get(covalentUrl)
-    console.log(response)
     
     if (argv.ckey) {
         console.log(`Fetching covalent data from ${covalentUrl}`);
