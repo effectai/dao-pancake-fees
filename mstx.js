@@ -40,7 +40,6 @@ const api = new Api({
 const fileBuffer = fs.readFileSync(path.join(__dirname, '/data/index.json'))
 const fileJson = JSON.parse(fileBuffer)
 
-
 const expireTransaction = (hours) => {
     const expire = new Date((new Date()).getTime() + hours * 60 * 60 * 1000); // expire n hours from now
     return expire.toISOString().slice(0, -5); // remove milliseconds and 'Z' from ISO string
