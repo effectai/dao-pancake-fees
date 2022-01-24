@@ -3,7 +3,7 @@ name: Run Calculation, Deploy and Commit.
 on:
   push:
     branches:
-      - main
+      - test
 
 # on:
 #   schedule:
