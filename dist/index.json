@@ -1,18 +1,1 @@
-{
-    "latestUpdateDateTime": "Fri, 14 Jan 2022 10:05:22 GMT",
-    "foundationTotal_EFX": "27759.4528",
-    "totalTransactions_EFX": "26570835.752987394000804311",
-    "totalSwaps": 1214,
-    "averageEfxFeePerSwap": 22.86610607011714,
-    "averageRatio": 61.415156507413506,
-    "startBlock": 13641990,
-    "startBlockDateTime": "Mon, 20 Dec 2021 14:01:07 GMT",
-    "endBlock": 14355336,
-    "endBlockDateTime": "Fri, 14 Jan 2022 10:02:35 GMT",
-    "totalSupplyBegin_CakeLP": "39037.743125709185586561",
-    "foundationBalanceBegin_CakeLP": "24202.739154153804797622",
-    "ratioBegin": 0.6199830527142985,
-    "totalSupplyEnd_CakeLP": "39055.437252908006785053",
-    "foundationBalanceEnd_CakeLP": "24202.739154153804797622",
-    "ratioEnd": 0.6197021684183477
-}
+{"latestUpdateDateTime":"Mon, 24 Jan 2022 11:27:08 GMT","foundationTotal_EFX":"33780.592828713106868538","totalTransactions_EFX":"32381773.484242683164190649","totalSwaps":1552,"averageEfxFeePerSwap":21.765845894789376,"averageRatio":61.35438144329897,"startBlock":13641990,"startBlockDateTime":"Mon, 20 Dec 2021 14:01:07 GMT","endBlock":14643616,"endBlockDateTime":"Mon, 24 Jan 2022 11:23:34 GMT","totalSupplyBegin_CakeLP":"39037.743125709185586561","foundationBalanceBegin_CakeLP":"24202.739154153804797622","ratioBegin":0.6199830527142985,"totalSupplyEnd_CakeLP":"38990.262994880935299395","foundationBalanceEnd_CakeLP":"24202.739154153804797622","ratioEnd":0.6207380329117401}
