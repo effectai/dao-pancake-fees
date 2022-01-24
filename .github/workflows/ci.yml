@@ -43,10 +43,16 @@ jobs:
       - run: cp dist/index.json "data/$(date).json"
       - run: ls data
 
-      - name: Add & Commit
-        uses: stefanzweifel/git-auto-commit-action@v4
+      # - name: Add & Commit
+      #   uses: stefanzweifel/git-auto-commit-action@v4
+      #   with:
+      #     commit_message: "Commit calculations"
+
+      - uses: EndBug/add-and-commit@v8
         with:
-          commit_message: "Commit calculations"
+          add: 'data'
+          message: 'Commit Calculations'
+          
 
 
   # slackNotification:
