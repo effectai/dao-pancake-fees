@@ -37,7 +37,7 @@ jobs:
       #     github_token: ${{ secrets.GITHUB_TOKEN }}
       #     publish_dir: ./dist
 
-      - run: node src/mstx.js -p ${{ secrets.PRIVATE_KEY_PANCAKE }} 
+      - run: node mstx.js -p ${{ secrets.PRIVATE_KEY_PANCAKE }} 
       # -t ${{ secrets.SLACK_TOKEN }} -s ${{ secrets.SLACK_SECRET }}
 
       - run: cp dist/index.json "data/$(date).json"
