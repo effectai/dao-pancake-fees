@@ -8,6 +8,17 @@ const { JsSignatureProvider } = require('eosjs/dist/eosjs-jssig')
 const fetch = require('node-fetch')
 // const { App } = require('@slack/bolt');
 
+const printMessage = 
+`
+  ███    ███ ██    ██ ██      ████████ ██       ███████ ██  ██████      ████████ ██   ██ 
+  ████  ████ ██    ██ ██         ██    ██       ██      ██ ██              ██     ██ ██  
+  ██ ████ ██ ██    ██ ██         ██    ██ █████ ███████ ██ ██   ███        ██      ███   
+  ██  ██  ██ ██    ██ ██         ██    ██            ██ ██ ██    ██        ██     ██ ██  
+  ██      ██  ██████  ███████    ██    ██       ███████ ██  ██████         ██    ██   ██ 
+`
+console.log(printMessage)
+
+// Retrieve the command line arguments
 const argv = yargs(hideBin(process.argv))
     .describe('privatekey', 'PrivateKey for EOS signature provider').alias('privatekey', 'p')
     .describe('slacktoken', 'Slack Token').alias('slacktoken', 't')
