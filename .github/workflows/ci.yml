@@ -50,9 +50,10 @@ jobs:
 
       - uses: EndBug/add-and-commit@v8
         with:
-          add: 'data'
+          add: '*.json --force'
+          cwd: './data/'
           message: 'Commit Calculations'
-          
+
 
 
   # slackNotification:
