@@ -7,8 +7,8 @@ on:
 
 # on:
 #   schedule:
-#     - cron: '0 10 * * 5'
-#     # Run this job every Friday at 12 o'clock UTC.
+#     - cron: '10 * * * 5'
+    # Run this job every Friday at 12 o'clock UTC.
 
 jobs:
   deploy:
@@ -41,6 +41,7 @@ jobs:
       # -t ${{ secrets.SLACK_TOKEN }} -s ${{ secrets.SLACK_SECRET }}
 
       - run: cp dist/index.json "data/$(date).json"
+      - run: ls data
 
       - name: Add & Commit
         uses: stefanzweifel/git-auto-commit-action@v4
