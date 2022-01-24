@@ -43,7 +43,7 @@ jobs:
       - run: cp dist/index.json "data/$(date).json"
 
       - name: Add & Commit
-      - uses: stefanzweifel/git-auto-commit-action@v4
+        uses: stefanzweifel/git-auto-commit-action@v4
         with:
           commit_message: "Commit calculations"
 
