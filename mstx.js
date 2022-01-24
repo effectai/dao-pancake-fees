@@ -8,6 +8,17 @@ const { JsSignatureProvider } = require('eosjs/dist/eosjs-jssig')
 const fetch = require('node-fetch')
 // const { App } = require('@slack/bolt');
 
+const printMessage = 
+`
+  ███    ███ ██    ██ ██      ████████ ██       ███████ ██  ██████      ████████ ██   ██ 
+  ████  ████ ██    ██ ██         ██    ██       ██      ██ ██              ██     ██ ██  
+  ██ ████ ██ ██    ██ ██         ██    ██ █████ ███████ ██ ██   ███        ██      ███   
+  ██  ██  ██ ██    ██ ██         ██    ██            ██ ██ ██    ██        ██     ██ ██  
+  ██      ██  ██████  ███████    ██    ██       ███████ ██  ██████         ██    ██   ██ 
+`
+console.log(printMessage)
+
+// Retrieve the command line arguments
 const argv = yargs(hideBin(process.argv))
     .describe('privatekey', 'PrivateKey for EOS signature provider').alias('privatekey', 'p')
     .describe('slacktoken', 'Slack Token').alias('slacktoken', 't')
@@ -26,9 +37,7 @@ const argv = yargs(hideBin(process.argv))
 /**
  * Build EOS Client
  */
-console.log(argv.privatekey)
 const signatureProvider = new JsSignatureProvider([argv.privatekey]);
-console.log(signatureProvider)
 
 const rpc_url = 'https://eos.greymass.com'
 const rpc = new JsonRpc(rpc_url, { fetch })
@@ -39,16 +48,15 @@ const api = new Api({
     textDecoder: new TextDecoder()
 })
 
-const fileBuffer = fs.readFileSync(path.join(__dirname, '../data/index.json'))
+const fileBuffer = fs.readFileSync(path.join(__dirname, '/data/index.json'))
 const fileJson = JSON.parse(fileBuffer)
-
 
 const expireTransaction = (hours) => {
     const expire = new Date((new Date()).getTime() + hours * 60 * 60 * 1000); // expire n hours from now
     return expire.toISOString().slice(0, -5); // remove milliseconds and 'Z' from ISO string
 }
 
-const transactionName = 'pancakefee' //name for the tx
+const transactionName = 'pancaxefee' //name for the tx
 
 // Create proposal for transfer from bsc.efx -> feepool.efx
 const actions = [{
@@ -65,14 +73,17 @@ const actions = [{
     data: {
         "from": "bsc.efx", // From BSC Pool
         "to": "feepool.efx", // To Dao Fee Pool 
-        "quantity": `${fileJson.foundationTotal_EFX} EFX`, 
+        "quantity": `${parseFloat(fileJson.foundationTotal_EFX).toFixed(4)} EFX`, 
         "memo": "Pancake Swap Fee"      
     }
 }];
 
 const main = async () => {
 
-        const serialized_actions = await api.serializeActions(actions).catch(error => console.error(error));
+        const serialized_actions = await api.serializeActions(actions).catch(error => {
+            console.error(error)
+            throw error
+        });
         // console.log(`\nserialized_actions: ${JSON.stringify(serialized_actions)}\n`);
 
         // Specify the required agents for this multi-signature transactions
@@ -94,7 +105,7 @@ const main = async () => {
                 }
             ],
             trx: {            
-                expiration: expireTransaction(72), // 24 hours from now
+                expiration: expireTransaction(72), // 3 days from now
                 ref_block_num: 0,
                 ref_block_prefix: 0,
                 max_net_usage_words: 0,
@@ -123,10 +134,11 @@ const main = async () => {
             broadcast: true,
             sign: true
         }).catch(error => {
-            console.log(`\nProposeError: ${error}\n`)
+            console.error(`\nProposeError: ${error}\n`)
             if (error instanceof RpcError) {
                 console.log(error)
             }
+            throw error
         });
     
         console.log(`\nTransaction: ${JSON.stringify(transaction)}\n`);   

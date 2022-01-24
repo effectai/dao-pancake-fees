@@ -3,12 +3,12 @@ name: Run Calculation, Deploy and Commit.
 # on:
 #   push:
 #     branches:
-#       - main
+#       - test
 
 on:
   schedule:
-    - cron: '0 10 * * 5'
-    # Run this job every Friday at 12 o'clock UTC.
+    - cron: '11 * * * 5'
+    # Run this job every Friday at 11 o'clock UTC.
 
 jobs:
   deploy:
@@ -28,25 +28,33 @@ jobs:
           key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
           restore-keys: |
             ${{ runner.os }}-node-
+
+      # Insall dependencies
       - run: npm ci
+      # Retrieve data and calculate fees
       - run: node index.js --ckey ${{ secrets.COVALENT_API_KEY }}
 
+      # Deploy index.html to github pages
       - name: deploy
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./dist
 
-      - run: node src/mstx.js -p ${{ secrets.PRIVATE_KEY_PANCAKE }} -t ${{ secrets.SLACK_TOKEN }} -s ${{ secrets.SLACK_SECRET }}
+      # Build multi-sig tx
+      - run: node mstx.js -p ${{ secrets.PRIVATE_KEY_PANCAKE }} 
+      # -t ${{ secrets.SLACK_TOKEN }} -s ${{ secrets.SLACK_SECRET }}
 
+      # copy and commit this weeks fees
       - run: cp dist/index.json "data/$(date).json"
+      - run: ls data
+      - uses: EndBug/add-and-commit@v8
+        with:
+          add: '*.json --force'
+          cwd: './data/'
+          message: 'Commit Calculations'
 
-      - name: Add & Commit
-        uses: EndBug/add-and-commit@v7.5.0
-        with: 
-          default_author: github_actions
-          message: Commit PCS Fee Calculation
-
+  # Post notification to slack
   slackNotification:
     name: Slack Notification
     runs-on: ubuntu-latest
@@ -58,5 +66,5 @@ jobs:
         SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
         SLACK_USERNAME: PCS_Bot
         SLACK_ICON: https://effect.network/img/logo/logo_icon.png
-        SLACK_MESSAGE: 'Updated Pancake Swap Fee Page: https://effectai.github.io/dao-pancake-fees/ :rocket: Please sign transaction: https://bloks.io/msig/pancakeffect/https://bloks.io/msig/pancakeffect/pancakefee'
+        SLACK_MESSAGE: 'Updated Pancake Swap Fee Page: https://effectai.github.io/dao-pancake-fees/ :rocket: Please sign transaction: https://bloks.io/msig/pancakeffect/pancaxefee'
 
