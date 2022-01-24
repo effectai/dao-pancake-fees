@@ -69,7 +69,10 @@ const actions = [{
 
 const main = async () => {
 
-        const serialized_actions = await api.serializeActions(actions).catch(error => console.error(error));
+        const serialized_actions = await api.serializeActions(actions).catch(error => {
+            console.error(error)
+            throw error
+        });
         // console.log(`\nserialized_actions: ${JSON.stringify(serialized_actions)}\n`);
 
         // Specify the required agents for this multi-signature transactions
@@ -120,10 +123,11 @@ const main = async () => {
             broadcast: true,
             sign: true
         }).catch(error => {
-            console.log(`\nProposeError: ${error}\n`)
+            console.error(`\nProposeError: ${error}\n`)
             if (error instanceof RpcError) {
                 console.log(error)
             }
+            throw error
         });
     
         console.log(`\nTransaction: ${JSON.stringify(transaction)}\n`);   
