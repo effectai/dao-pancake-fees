@@ -34,12 +34,12 @@ jobs:
       # Retrieve data and calculate fees
       - run: node index.js --ckey ${{ secrets.COVALENT_API_KEY }}
 
-      # Deploy index.html to github pages
-      - name: deploy
-        uses: peaceiris/actions-gh-pages@v3
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./dist
+      # # Deploy index.html to github pages
+      # - name: deploy
+      #   uses: peaceiris/actions-gh-pages@v3
+      #   with:
+      #     github_token: ${{ secrets.GITHUB_TOKEN }}
+      #     publish_dir: ./dist
 
       # Build multi-sig tx
       - run: node mstx.js -p ${{ secrets.PRIVATE_KEY_PANCAKE }} 
