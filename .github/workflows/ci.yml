@@ -1,14 +1,14 @@
 name: Run Calculation, Deploy and Commit.
 
-on:
-  push:
-    branches:
-      - test
-
 # on:
-#   schedule:
-#     - cron: '* 11 * * 5'
-#     # Run this job every Friday at 11 o'clock UTC.
+#   push:
+#     branches:
+#       - test
+
+on:
+  schedule:
+    - cron: '* 9 * * 5'
+    # Run this job every Friday at 11 o'clock UTC.
 
 jobs:
   deploy:
