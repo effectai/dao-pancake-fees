@@ -7,7 +7,7 @@ name: Run Calculation, Deploy and Commit.
 
 on:
   schedule:
-    - cron: '11 * * * 5'
+    - cron: '* 11 * * 5'
     # Run this job every Friday at 11 o'clock UTC.
 
 jobs:
