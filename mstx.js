@@ -56,7 +56,7 @@ const expireTransaction = (hours) => {
     return expire.toISOString().slice(0, -5); // remove milliseconds and 'Z' from ISO string
 }
 
-const transactionName = 'pcsfee' //name for the tx
+const transactionName = 'pcsefx' //name for the tx
 
 // Create proposal for transfer from bsc.efx -> feepool.efx
 const actions = [{
