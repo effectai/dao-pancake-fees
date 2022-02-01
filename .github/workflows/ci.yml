@@ -8,7 +8,7 @@ name: Run Calculation, Deploy and Commit.
 #       - slack-test
 on:
   schedule:
-    - cron: '58 * * * *'
+    - cron: '05 * * * *'
     # run this every fifteen minutes, every hour of every day
 
 # Official run time. DO NOT CHANGE
