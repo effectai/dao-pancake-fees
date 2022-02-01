@@ -57,6 +57,7 @@ jobs:
       #     cwd: './data/'
       #     message: 'Commit Calculations'
 
+      # Deploy index.html to github pages
       - name: deploy
         uses: peaceiris/actions-gh-pages@v3
         with:
