@@ -2,13 +2,13 @@ name: Run Calculation, Deploy and Commit.
 
 # For TESTING, REMEMBER to adjust expiration of tx in 
 # mstx.js :: main() :: proposeInput.trx.expiration
-# on:
-#   push:
-#     branches:
-#       - main
 on:
-  schedule:
-    - cron: '25 * * * *'
+  push:
+    branches:
+      - main
+# on:
+#   schedule:
+#     - cron: '25 * * * *'
     # run this every fifteen minutes, every hour of every day
 
 # Official run time. DO NOT CHANGE
@@ -49,12 +49,12 @@ jobs:
       - run: node mstx.js -p ${{ secrets.PRIVATE_KEY_PANCAKE }} -b ${{ secrets.SLACK_BOT_TOKEN_XOXB }} -s ${{ secrets.SLACK_SIGNING_SECRET }} -a ${{ secrets.SLACK_APP_TOKEN_XAPP }}
 
       # # copy and commit this weeks fees, not sure if this makes sense. I think we can remove this.
-      # - run: cp dist/index.json "data/$(date).json"
-      # - uses: EndBug/add-and-commit@v8
-      #   with:
-      #     add: '*.json --force'
-      #     cwd: './data/'
-      #     message: 'Commit Calculations'
+      - run: cp dist/index.json "data/$(date).json"
+      - uses: EndBug/add-and-commit@v8
+        with:
+          add: '. --force'
+          cwd: '.'
+          message: 'Commit Calculations'
 
       # Deploy index.html to github pages
       - name: deploy
