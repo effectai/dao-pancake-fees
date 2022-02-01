@@ -61,16 +61,16 @@ jobs:
           message: 'Commit Calculations'
 
   # Post notification to slack
-  slackNotification:
-    name: Slack Notification
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v2
-    - name: Slack Notification
-      uses: rtCamp/action-slack-notify@v2
-      env:
-        SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
-        SLACK_USERNAME: PCS_Bot
-        SLACK_ICON: https://effect.network/img/logo/logo_icon.png
-        SLACK_MESSAGE: 'Updated Pancake Swap Fee Page: https://effectai.github.io/dao-pancake-fees/ :rocket:'
+  # slackNotification:
+  #   name: Slack Notification
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #   - uses: actions/checkout@v2
+  #   - name: Slack Notification
+  #     uses: rtCamp/action-slack-notify@v2
+  #     env:
+  #       SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+  #       SLACK_USERNAME: PCS_Bot
+  #       SLACK_ICON: https://effect.network/img/logo/logo_icon.png
+  #       SLACK_MESSAGE: 'Updated Pancake Swap Fee Page: https://effectai.github.io/dao-pancake-fees/ :rocket:'
 

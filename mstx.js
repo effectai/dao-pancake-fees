@@ -6,7 +6,7 @@ const {Api, JsonRpc, RpcError } = require('eosjs');
 const { TextDecoder, TextEncoder } = require('util');
 const { JsSignatureProvider } = require('eosjs/dist/eosjs-jssig')
 const fetch = require('node-fetch')
-// const { App } = require('@slack/bolt');
+const { App } = require('@slack/bolt');
 
 const printMessage = 
 `
