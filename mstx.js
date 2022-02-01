@@ -21,18 +21,13 @@ console.log(printMessage)
 // Retrieve the command line arguments
 const argv = yargs(hideBin(process.argv))
     .describe('privatekey', 'PrivateKey for EOS signature provider').alias('privatekey', 'p')
-    .describe('slacktoken', 'Slack Token').alias('slacktoken', 't')
-    .describe('slacksecret', 'Slack Secret').alias('slacksecret', 's')
-    .demandOption(['privatekey'], 'privatekey is required')
+    .describe('slackbot', 'Slack Bot Token').alias('slackbot', 'b')
+    .describe('slackapp', 'Slack App Token').alias('slackapp', 'a')
+    .describe('slacksecret', 'Slack Signing Secret').alias('slacksecret', 's')
+    // only private key is needed, other options are optional for sending slack notification
+    .demandOption(['privatekey'], 'privatekey is required') 
     .argv
 
-/**
- * Build Slack Client
- */
-const slack = new App({
-    signingSecret: argv.slacksecret,
-    token: argv.slacktoken,
-});
 
 /**
  * Build EOS Client
@@ -144,17 +139,27 @@ const main = async () => {
     
         console.log(`\nTransaction: ${JSON.stringify(transaction)}\n`);   
 
-        // send link to slack with transaction.transaction_id
-        await slack.client.chat.postMessage({
-            token: argv.slacktoken,
-            channel: '#test',
-            // channel: '#proj-masterchef',
-            text: `Please sign the transaction: https://bloks.io/msig/pancakeffect/${transactionName}
-            \nTransaction ID: ${transaction.transaction_id}
-            \nTransaction: ${JSON.stringify(transaction)}
-            \nInfo: ${JSON.stringify(fileJson)}
-            `
-        }).catch(error => console.log(error));
+        if (argv.slackapp) {
+            /**
+             * Build Slack Client
+             */
+            const slack = new App({
+                signingSecret: argv.slacksecret,
+                token: argv.slackbot,
+                appToken: argv.slackapp
+            });
+
+            // send link to slack with transaction.transaction_id
+            await slack.client.chat.postMessage({
+                channel: '#test',
+                // channel: '#proj-masterchef',
+                text: `Please sign the transaction: https://bloks.io/msig/pancakeffect/${transactionName}
+                \nTransaction ID: ${transaction.transaction_id}
+                \nTransaction: ${JSON.stringify(transaction)}
+                \nInfo: ${JSON.stringify(fileJson)}
+                `
+            }).catch(error => console.log(error));
+        }
 
 };
 

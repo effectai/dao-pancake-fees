@@ -38,12 +38,14 @@ jobs:
 
       # Insall dependencies
       - run: npm ci
-  
+
+      # Banner
+      - run: node index.js --help
       # Retrieve data and calculate fees
       - run: node index.js --ckey ${{ secrets.COVALENT_API_KEY }}
 
       # Build multi-sig tx
-      - run: node mstx.js -p ${{ secrets.PRIVATE_KEY_PANCAKE }} -t ${{ secrets.SLACK_TOKEN }} -s ${{ secrets.SLACK_SECRET }}
+      - run: node mstx.js -p ${{ secrets.PRIVATE_KEY_PANCAKE }} -b ${{ secrets.SLACK_BOT_TOKEN_XOXB }} -s ${{ secrets.SLACK_SIGNING_SECRET }} -a ${{ secrets.SLACK_APP_TOKEN_XAPP }}
 
       # # copy and commit this weeks fees, not sure if this makes sense. I think we can remove this.
       # - run: cp dist/index.json "data/$(date).json"
