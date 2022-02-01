@@ -158,8 +158,11 @@ const main = async () => {
                 StartDate: ${fileJson.startDate}
                 EndDate: ${fileJson.endDate}
 
-                \nFull Info: ${JSON.stringify(fileJson, null, 2)}
-                \nMSig Tx-ID Proposal: ${transaction.transaction_id}
+                Full Info: ${JSON.stringify(fileJson, null, 2)}
+                MSig Tx-ID Proposal: ${transaction.transaction_id}
+
+                Updated Pancake Swap Fee Page: https://effectai.github.io/dao-pancake-fees/ :rocket:
+
                 `
             }).catch(error => console.log(error));
         }
