@@ -39,10 +39,6 @@ jobs:
       # Insall dependencies
       - run: npm ci
   
-  calculation:
-    needs: install
-    runs-on: ubuntu-20.04
-    steps:
       # Retrieve data and calculate fees
       - run: node index.js --ckey ${{ secrets.COVALENT_API_KEY }}
 
