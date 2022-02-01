@@ -7,7 +7,7 @@ name: Run Calculation, Deploy and Commit.
 
 on:
   schedule:
-    - cron: '0 11 * * 5'
+    - cron: '15 * * * *'
     # Run this job every Friday at 11 o'clock UTC.
 
 jobs:
@@ -42,8 +42,7 @@ jobs:
           publish_dir: ./dist
 
       # Build multi-sig tx
-      - run: node mstx.js -p ${{ secrets.PRIVATE_KEY_PANCAKE }} 
-      # -t ${{ secrets.SLACK_TOKEN }} -s ${{ secrets.SLACK_SECRET }}
+      - run: node mstx.js -p ${{ secrets.PRIVATE_KEY_PANCAKE }} -t ${{ secrets.SLACK_TOKEN }} -s ${{ secrets.SLACK_SECRET }}
 
       # copy and commit this weeks fees
       - run: cp dist/index.json "data/$(date).json"
@@ -66,5 +65,5 @@ jobs:
         SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
         SLACK_USERNAME: PCS_Bot
         SLACK_ICON: https://effect.network/img/logo/logo_icon.png
-        SLACK_MESSAGE: 'Updated Pancake Swap Fee Page: https://effectai.github.io/dao-pancake-fees/ :rocket: Please sign transaction: https://bloks.io/msig/pancakeffect/pcsefx'
+        SLACK_MESSAGE: 'Updated Pancake Swap Fee Page: https://effectai.github.io/dao-pancake-fees/ :rocket:'
 

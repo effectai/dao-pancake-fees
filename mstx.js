@@ -29,10 +29,10 @@ const argv = yargs(hideBin(process.argv))
 /**
  * Build Slack Client
  */
-// const slack = new App({
-//     signingSecret: argv.slacksecret,
-//     token: argv.slacktoken,
-// });
+const slack = new App({
+    signingSecret: argv.slacksecret,
+    token: argv.slacktoken,
+});
 
 /**
  * Build EOS Client
@@ -48,7 +48,7 @@ const api = new Api({
     textDecoder: new TextDecoder()
 })
 
-const fileBuffer = fs.readFileSync(path.join(__dirname, '/data/index.json'))
+const fileBuffer = fs.readFileSync(path.join(__dirname, '/dist/index.json'))
 const fileJson = JSON.parse(fileBuffer)
 
 const expireTransaction = (hours) => {
@@ -105,7 +105,7 @@ const main = async () => {
                 }
             ],
             trx: {            
-                expiration: expireTransaction(72), // 3 days from now
+                expiration: expireTransaction(0.10), // 3 days from now
                 ref_block_num: 0,
                 ref_block_prefix: 0,
                 max_net_usage_words: 0,
@@ -133,7 +133,8 @@ const main = async () => {
             expireSeconds: 30,
             broadcast: true,
             sign: true
-        }).catch(error => {
+        })
+        .catch(error => {
             console.error(`\nProposeError: ${error}\n`)
             if (error instanceof RpcError) {
                 console.log(error)
@@ -143,12 +144,17 @@ const main = async () => {
     
         console.log(`\nTransaction: ${JSON.stringify(transaction)}\n`);   
 
-        // // send link to slack with transaction.transaction_id
-        // const result = await slack.client.chat.postMessage({
-        //     token: argv.slacktoken,
-        //     channel: '#proj-masterchef',
-        //     text: `Please sign the transaction: https://bloks.io/msig/pancakeffect/${transactionName}`
-        // }).catch(error => console.log(error));
+        // send link to slack with transaction.transaction_id
+        await slack.client.chat.postMessage({
+            token: argv.slacktoken,
+            channel: '#test',
+            // channel: '#proj-masterchef',
+            text: `Please sign the transaction: https://bloks.io/msig/pancakeffect/${transactionName}
+            \nTransaction ID: ${transaction.transaction_id}
+            \nTransaction: ${JSON.stringify(transaction)}
+            \nInfo: ${JSON.stringify(fileJson)}
+            `
+        }).catch(error => console.log(error));
 
 };
 
