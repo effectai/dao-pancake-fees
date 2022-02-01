@@ -40,7 +40,6 @@ jobs:
       # Insall dependencies
       - run: npm ci
 
-      - name: Calculations
       # Banner
       - run: node index.js --help
       # Retrieve data and calculate fees
@@ -59,7 +58,6 @@ jobs:
 
       # Deploy index.html to github pages
       - name: deploy
-        run: ls
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
