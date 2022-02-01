@@ -6,9 +6,9 @@ on:
   push:
     branches:
       - slack-test
-  schedule:
-    - cron: '15,30,45,00 * * * *'
-    # run this every fifteen minutes, every hour of every day
+  # schedule:
+    # - cron: '15,30,45,00 * * * *'
+    # # run this every fifteen minutes, every hour of every day
 
 # Official run time. DO NOT CHANGE
 # https://crontab.guru/#00_11_*_*_5
@@ -18,7 +18,7 @@ on:
 #     - cron: '00 11 * * 5'
 
 jobs:
-  deploy:
+  install:
     runs-on: ubuntu-20.04
     steps:
       - uses: actions/checkout@v2
@@ -38,30 +38,39 @@ jobs:
 
       # Insall dependencies
       - run: npm ci
+  
+  calculation:
+    needs: install
+    runs-on: ubuntu-20.04
+    steps:
       # Retrieve data and calculate fees
       - run: node index.js --ckey ${{ secrets.COVALENT_API_KEY }}
-
-      # Deploy index.html to github pages
-      - name: deploy
-        uses: peaceiris/actions-gh-pages@v3
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./dist
 
       # Build multi-sig tx
       - run: node mstx.js -p ${{ secrets.PRIVATE_KEY_PANCAKE }} -t ${{ secrets.SLACK_TOKEN }} -s ${{ secrets.SLACK_SECRET }}
 
-      # copy and commit this weeks fees
-      - run: cp dist/index.json "data/$(date).json"
-      - run: ls data
-      - uses: EndBug/add-and-commit@v8
-        with:
-          add: '*.json --force'
-          cwd: './data/'
-          message: 'Commit Calculations'
+      # # copy and commit this weeks fees, not sure if this makes sense. I think we can remove this.
+      # - run: cp dist/index.json "data/$(date).json"
+      # - uses: EndBug/add-and-commit@v8
+      #   with:
+      #     add: '*.json --force'
+      #     cwd: './data/'
+      #     message: 'Commit Calculations'
+
+  # deploy:
+  #   needs: calculation
+  #   runs-on: ubuntu-20.04
+  #   steps:
+  #     - name: deploy
+  #       uses: peaceiris/actions-gh-pages@v3
+  #       with:
+  #         github_token: ${{ secrets.GITHUB_TOKEN }}
+  #         publish_dir: ./dist
+
 
   # Post notification to slack
   # slackNotification:
+  #   needs: deploy
   #   name: Slack Notification
   #   runs-on: ubuntu-latest
   #   steps:
