@@ -154,9 +154,12 @@ const main = async () => {
                 channel: '#test',
                 // channel: '#proj-masterchef',
                 text: `Please sign the transaction: https://bloks.io/msig/pancakeffect/${transactionName}
-                \nInfo: ${JSON.stringify(fileJson, null, 2)}
-                \nTransaction ID: ${transaction.transaction_id}
-                \nTransaction: ${JSON.stringify(transaction)}
+                Amount: ${fileJson.foundationTotal_EFX} EFX
+                StartDate: ${fileJson.startDate}
+                EndDate: ${fileJson.endDate}
+
+                \nFull Info: ${JSON.stringify(fileJson, null, 2)}
+                \nMSig Tx-ID Proposal: ${transaction.transaction_id}
                 `
             }).catch(error => console.log(error));
         }
