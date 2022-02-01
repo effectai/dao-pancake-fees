@@ -51,7 +51,7 @@ const expireTransaction = (hours) => {
     return expire.toISOString().slice(0, -5); // remove milliseconds and 'Z' from ISO string
 }
 
-const transactionName = 'pf' //name for the tx
+const transactionName = 'pp' //name for the tx
 
 // Create proposal for transfer from bsc.efx -> feepool.efx
 const actions = [{
@@ -155,14 +155,14 @@ const main = async () => {
                 // channel: '#proj-masterchef',
                 text: 
                 `Please sign the transaction: https://bloks.io/msig/pancakeffect/${transactionName} \
-                Amount: ${parseFloat(fileJson.foundationTotal_EFX).toFixed(4)} EFX \
-                StartDate: ${fileJson.startBlockDateTime} \
-                EndDate: ${fileJson.endBlockDateTime} \
- \
-                Full Info: ${JSON.stringify(fileJson, null, 2)} \
-                MSig Tx-ID Proposal: ${transaction.transaction_id} \
-                 \
-                Updated Pancake Swap Fee Page: https://effectai.github.io/dao-pancake-fees/ :rocket: \
+                \nAmount: ${parseFloat(fileJson.foundationTotal_EFX).toFixed(4)} EFX \
+                \nStartDate: ${fileJson.startBlockDateTime} \
+                \nEndDate: ${fileJson.endBlockDateTime} \
+                \n\n
+                \nFull Info: ${JSON.stringify(fileJson, null, 2)} \
+                \nMSig Tx-ID Proposal: ${transaction.transaction_id} \
+                \n\n
+                \nUpdated Pancake Swap Fee Page: https://effectai.github.io/dao-pancake-fees/ :rocket: \
                 `
             }).catch(error => console.log(error));
         }
