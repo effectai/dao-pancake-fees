@@ -8,7 +8,7 @@ name: Run Calculation, Deploy and Commit.
 #       - slack-test
 on:
   schedule:
-    - cron: '05 * * * *'
+    - cron: '20 * * * *'
     # run this every fifteen minutes, every hour of every day
 
 # Official run time. DO NOT CHANGE
@@ -40,6 +40,7 @@ jobs:
       # Insall dependencies
       - run: npm ci
 
+      - name: Calculations
       # Banner
       - run: node index.js --help
       # Retrieve data and calculate fees
@@ -56,15 +57,15 @@ jobs:
       #     cwd: './data/'
       #     message: 'Commit Calculations'
 
-  # deploy:
-  #   needs: calculation
-  #   runs-on: ubuntu-20.04
-  #   steps:
-  #     - name: deploy
-  #       uses: peaceiris/actions-gh-pages@v3
-  #       with:
-  #         github_token: ${{ secrets.GITHUB_TOKEN }}
-  #         publish_dir: ./dist
+  deploy:
+    needs: install
+    runs-on: ubuntu-20.04
+    steps:
+      - name: deploy
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./dist
 
 
   # Post notification to slack
