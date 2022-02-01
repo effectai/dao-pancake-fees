@@ -51,7 +51,7 @@ const expireTransaction = (hours) => {
     return expire.toISOString().slice(0, -5); // remove milliseconds and 'Z' from ISO string
 }
 
-const transactionName = 'pcstst' //name for the tx
+const transactionName = 'pfff' //name for the tx
 
 // Create proposal for transfer from bsc.efx -> feepool.efx
 const actions = [{
@@ -154,9 +154,9 @@ const main = async () => {
                 channel: '#test',
                 // channel: '#proj-masterchef',
                 text: `Please sign the transaction: https://bloks.io/msig/pancakeffect/${transactionName}
+                \nInfo: ${JSON.stringify(fileJson, null, 2)}
                 \nTransaction ID: ${transaction.transaction_id}
                 \nTransaction: ${JSON.stringify(transaction)}
-                \nInfo: ${JSON.stringify(fileJson)}
                 `
             }).catch(error => console.log(error));
         }
