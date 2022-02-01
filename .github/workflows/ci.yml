@@ -5,10 +5,20 @@ name: Run Calculation, Deploy and Commit.
 #     branches:
 #       - test
 
+# Official run time. DO NOT CHANGE
+# https://crontab.guru/#00_11_*_*_5
+# “At 11:00 on Friday.”
+# on:
+#   schedule:
+#     - cron: '00 11 * * 5'
+
+# For TESTING, REMEMBER to adjust expiration of tx in 
+# mstx.js :: main() :: proposeInput.trx.expiration
 on:
   schedule:
-    - cron: '15 * * * *'
-    # Run this job every Friday at 11 o'clock UTC.
+    - cron: '15,30,45,00 * * * *'
+    # run this every fifteen minutes, every hour of every day
+
 
 jobs:
   deploy:
