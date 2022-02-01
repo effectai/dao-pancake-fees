@@ -6,6 +6,7 @@ on:
   push:
     branches:
       - main
+      
 # on:
 #   schedule:
 #     - cron: '25 * * * *'
@@ -52,7 +53,7 @@ jobs:
       - run: cp dist/index.json "data/$(date).json"
       - uses: EndBug/add-and-commit@v8
         with:
-          add: '. --force'
+          add: '.'
           cwd: '.'
           message: 'Commit Calculations'
 

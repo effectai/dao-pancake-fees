@@ -28,7 +28,6 @@ const argv = yargs(hideBin(process.argv))
     .demandOption(['privatekey'], 'privatekey is required') 
     .argv
 
-
 /**
  * Build EOS Client
  */
@@ -51,7 +50,7 @@ const expireTransaction = (hours) => {
     return expire.toISOString().slice(0, -5); // remove milliseconds and 'Z' from ISO string
 }
 
-const transactionName = 'tsttst' //name for the tx
+const transactionName = 'tsttsttst' //name for the tx
 
 // Create proposal for transfer from bsc.efx -> feepool.efx
 const actions = [{
@@ -137,7 +136,7 @@ const main = async () => {
             throw error
         });
     
-        console.log(`\nTransaction: ${JSON.stringify(transaction)}\n`);   
+        console.log(`\nTransaction: ${JSON.stringify(transaction)}\n`)
 
         if (argv.slackapp) {
             /**
@@ -166,8 +165,6 @@ const main = async () => {
                 `
             }).catch(error => console.log(error));
         }
-
 };
-
 
 main()
