@@ -2,13 +2,14 @@ name: Run Calculation, Deploy and Commit.
 
 # For TESTING, REMEMBER to adjust expiration of tx in 
 # mstx.js :: main() :: proposeInput.trx.expiration
+# on:
+#   push:
+#     branches:
+#       - slack-test
 on:
-  push:
-    branches:
-      - slack-test
-  # schedule:
-    # - cron: '15,30,45,00 * * * *'
-    # # run this every fifteen minutes, every hour of every day
+  schedule:
+    - cron: '05 * * * *'
+    # run this every fifteen minutes, every hour of every day
 
 # Official run time. DO NOT CHANGE
 # https://crontab.guru/#00_11_*_*_5
