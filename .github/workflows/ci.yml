@@ -6,10 +6,8 @@ on:
   push:
     branches:
       - main
-      
-# on:
-#   schedule:
-#     - cron: '25 * * * *'
+  schedule:
+    - cron: '10,20,30 * * * *'
     # run this every fifteen minutes, every hour of every day
 
 # Official run time. DO NOT CHANGE
