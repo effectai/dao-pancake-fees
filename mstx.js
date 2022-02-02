@@ -50,7 +50,17 @@ const expireTransaction = (hours) => {
     return expire.toISOString().slice(0, -5); // remove milliseconds and 'Z' from ISO string
 }
 
-const transactionName = 'tsttsttst' //name for the tx
+const makeid = (length) => {
+    var result           = '';
+    var characters       = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
+    var charactersLength = characters.length;
+    for ( var i = 0; i < length; i++ ) {
+      result += characters.charAt(Math.floor(Math.random() *  charactersLength));
+   }
+   return result;
+}
+
+const transactionName = makeid(6) //name for the tx
 
 // Create proposal for transfer from bsc.efx -> feepool.efx
 const actions = [{
