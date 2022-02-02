@@ -7,7 +7,7 @@ on:
     branches:
       - main
   schedule:
-    - cron: '10,20,30 * * * *'
+    - cron: '00 9 * * *'
     # run this every fifteen minutes, every hour of every day
 
 # Official run time. DO NOT CHANGE
