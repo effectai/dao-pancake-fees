@@ -85,6 +85,7 @@ const actions = [{
 const main = async () => {
 
         const serialized_actions = await api.serializeActions(actions).catch(error => {
+            // TODO send error through slack notification slack
             console.error(error)
             throw error
         });
@@ -139,6 +140,7 @@ const main = async () => {
             sign: true
         })
         .catch(error => {
+            // TODO send error through slack notification slack
             console.error(`\nProposeError: ${error}\n`)
             if (error instanceof RpcError) {
                 console.log(error)
@@ -160,6 +162,11 @@ const main = async () => {
 
             // send link to slack with transaction.transaction_id
             await slack.client.chat.postMessage({
+
+                // TODO add button open transaction to bloks.io
+                // TODO add information about resources of pancakeeffect account
+                // TODO make text nice for sending to slack.
+
                 channel: '#test',
                 // channel: '#proj-masterchef',
                 text: 
@@ -173,7 +180,10 @@ const main = async () => {
                 \n\n
                 \nUpdated Pancake Swap Fee Page: https://effectai.github.io/dao-pancake-fees/ :rocket: \
                 `
-            }).catch(error => console.log(error));
+            }).catch(error => {
+                // TODO send error through slack notification slack
+                console.log(error)
+            });
         }
 };
 
