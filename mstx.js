@@ -6,7 +6,7 @@ const {Api, JsonRpc, RpcError } = require('eosjs');
 const { TextDecoder, TextEncoder } = require('util');
 const { JsSignatureProvider } = require('eosjs/dist/eosjs-jssig')
 const fetch = require('node-fetch')
-// const { App } = require('@slack/bolt');
+const { App } = require('@slack/bolt');
 
 const printMessage = 
 `
@@ -21,18 +21,12 @@ console.log(printMessage)
 // Retrieve the command line arguments
 const argv = yargs(hideBin(process.argv))
     .describe('privatekey', 'PrivateKey for EOS signature provider').alias('privatekey', 'p')
-    .describe('slacktoken', 'Slack Token').alias('slacktoken', 't')
-    .describe('slacksecret', 'Slack Secret').alias('slacksecret', 's')
-    .demandOption(['privatekey'], 'privatekey is required')
+    .describe('slackbot', 'Slack Bot Token').alias('slackbot', 'b')
+    .describe('slackapp', 'Slack App Token').alias('slackapp', 'a')
+    .describe('slacksecret', 'Slack Signing Secret').alias('slacksecret', 's')
+    // only private key is needed, other options are optional for sending slack notification
+    .demandOption(['privatekey'], 'privatekey is required') 
     .argv
-
-/**
- * Build Slack Client
- */
-// const slack = new App({
-//     signingSecret: argv.slacksecret,
-//     token: argv.slacktoken,
-// });
 
 /**
  * Build EOS Client
@@ -48,7 +42,7 @@ const api = new Api({
     textDecoder: new TextDecoder()
 })
 
-const fileBuffer = fs.readFileSync(path.join(__dirname, '/data/index.json'))
+const fileBuffer = fs.readFileSync(path.join(__dirname, '/dist/index.json'))
 const fileJson = JSON.parse(fileBuffer)
 
 const expireTransaction = (hours) => {
@@ -56,7 +50,17 @@ const expireTransaction = (hours) => {
     return expire.toISOString().slice(0, -5); // remove milliseconds and 'Z' from ISO string
 }
 
-const transactionName = 'pcsefx' //name for the tx
+const makeid = (length) => {
+    var result           = '';
+    var characters       = 'abcdefghijklmnopqrstuvwxyz12345';
+    var charactersLength = characters.length;
+    for ( var i = 0; i < length; i++ ) {
+      result += characters.charAt(Math.floor(Math.random() *  charactersLength));
+   }
+   return result;
+}
+
+const transactionName = makeid(6) //name for the tx
 
 // Create proposal for transfer from bsc.efx -> feepool.efx
 const actions = [{
@@ -81,6 +85,7 @@ const actions = [{
 const main = async () => {
 
         const serialized_actions = await api.serializeActions(actions).catch(error => {
+            // TODO send error through slack notification slack
             console.error(error)
             throw error
         });
@@ -105,7 +110,7 @@ const main = async () => {
                 }
             ],
             trx: {            
-                expiration: expireTransaction(72), // 3 days from now
+                expiration: expireTransaction(1), // 3 days from now
                 ref_block_num: 0,
                 ref_block_prefix: 0,
                 max_net_usage_words: 0,
@@ -133,7 +138,9 @@ const main = async () => {
             expireSeconds: 30,
             broadcast: true,
             sign: true
-        }).catch(error => {
+        })
+        .catch(error => {
+            // TODO send error through slack notification slack
             console.error(`\nProposeError: ${error}\n`)
             if (error instanceof RpcError) {
                 console.log(error)
@@ -141,16 +148,43 @@ const main = async () => {
             throw error
         });
     
-        console.log(`\nTransaction: ${JSON.stringify(transaction)}\n`);   
+        console.log(`\nTransaction: ${JSON.stringify(transaction)}\n`)
 
-        // // send link to slack with transaction.transaction_id
-        // const result = await slack.client.chat.postMessage({
-        //     token: argv.slacktoken,
-        //     channel: '#proj-masterchef',
-        //     text: `Please sign the transaction: https://bloks.io/msig/pancakeffect/${transactionName}`
-        // }).catch(error => console.log(error));
+        if (argv.slackapp) {
+            /**
+             * Build Slack Client
+             */
+            const slack = new App({
+                signingSecret: argv.slacksecret,
+                token: argv.slackbot,
+                appToken: argv.slackapp
+            });
 
+            // send link to slack with transaction.transaction_id
+            await slack.client.chat.postMessage({
+
+                // TODO add button open transaction to bloks.io
+                // TODO add information about resources of pancakeeffect account
+                // TODO make text nice for sending to slack.
+
+                channel: '#test',
+                // channel: '#proj-masterchef',
+                text: 
+                `Please sign the transaction: https://bloks.io/msig/pancakeffect/${transactionName} \
+                \nAmount: ${parseFloat(fileJson.foundationTotal_EFX).toFixed(4)} EFX \
+                \nStartDate: ${fileJson.startBlockDateTime} \
+                \nEndDate: ${fileJson.endBlockDateTime} \
+                \n\n
+                \nFull Info: ${JSON.stringify(fileJson, null, 2)} \
+                \nMSig Tx-ID Proposal: ${transaction.transaction_id} \
+                \n\n
+                \nUpdated Pancake Swap Fee Page: https://effectai.github.io/dao-pancake-fees/ :rocket: \
+                `
+            }).catch(error => {
+                // TODO send error through slack notification slack
+                console.log(error)
+            });
+        }
 };
-
 
 main()

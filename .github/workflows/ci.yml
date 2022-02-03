@@ -1,17 +1,24 @@
 name: Run Calculation, Deploy and Commit.
 
+# For TESTING, REMEMBER to adjust expiration of tx in 
+# mstx.js :: main() :: proposeInput.trx.expiration
 # on:
-#   push:
-#     branches:
-#       - test
+  # push:
+  #   branches:
+  #     - main
+  # schedule:
+  #   - cron: '00 9 * * *'
+    # run this every fifteen minutes, every hour of every day
 
+# Official run time. DO NOT CHANGE
+# https://crontab.guru/#00_11_*_*_5
+# “At 11:00 on Friday.”
 on:
   schedule:
-    - cron: '0 11 * * 5'
-    # Run this job every Friday at 11 o'clock UTC.
+    - cron: '00 11 * * 5'
 
 jobs:
-  deploy:
+  install:
     runs-on: ubuntu-20.04
     steps:
       - uses: actions/checkout@v2
@@ -31,8 +38,22 @@ jobs:
 
       # Insall dependencies
       - run: npm ci
+
+      # Banner
+      - run: node index.js --help
       # Retrieve data and calculate fees
       - run: node index.js --ckey ${{ secrets.COVALENT_API_KEY }}
+
+      # Build multi-sig tx
+      - run: node mstx.js -p ${{ secrets.PRIVATE_KEY_PANCAKE }} -b ${{ secrets.SLACK_BOT_TOKEN_XOXB }} -s ${{ secrets.SLACK_SIGNING_SECRET }} -a ${{ secrets.SLACK_APP_TOKEN_XAPP }}
+
+      # # copy and commit this weeks fees, not sure if this makes sense. I think we can remove this.
+      - run: cp dist/index.json "data/$(date).json"
+      - uses: EndBug/add-and-commit@v8
+        with:
+          add: '.'
+          cwd: '.'
+          message: 'Commit Calculations'
 
       # Deploy index.html to github pages
       - name: deploy
@@ -41,30 +62,19 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./dist
 
-      # Build multi-sig tx
-      - run: node mstx.js -p ${{ secrets.PRIVATE_KEY_PANCAKE }} 
-      # -t ${{ secrets.SLACK_TOKEN }} -s ${{ secrets.SLACK_SECRET }}
-
-      # copy and commit this weeks fees
-      - run: cp dist/index.json "data/$(date).json"
-      - run: ls data
-      - uses: EndBug/add-and-commit@v8
-        with:
-          add: '*.json --force'
-          cwd: './data/'
-          message: 'Commit Calculations'
 
   # Post notification to slack
-  slackNotification:
-    name: Slack Notification
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v2
-    - name: Slack Notification
-      uses: rtCamp/action-slack-notify@v2
-      env:
-        SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
-        SLACK_USERNAME: PCS_Bot
-        SLACK_ICON: https://effect.network/img/logo/logo_icon.png
-        SLACK_MESSAGE: 'Updated Pancake Swap Fee Page: https://effectai.github.io/dao-pancake-fees/ :rocket: Please sign transaction: https://bloks.io/msig/pancakeffect/pcsefx'
+  # slackNotification:
+  #   needs: deploy
+  #   name: Slack Notification
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #   - uses: actions/checkout@v2
+  #   - name: Slack Notification
+  #     uses: rtCamp/action-slack-notify@v2
+  #     env:
+  #       SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+  #       SLACK_USERNAME: PCS_Bot
+  #       SLACK_ICON: https://effect.network/img/logo/logo_icon.png
+  #       SLACK_MESSAGE: 'Updated Pancake Swap Fee Page: https://effectai.github.io/dao-pancake-fees/ :rocket:'
 
