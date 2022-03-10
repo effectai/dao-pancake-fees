@@ -46,8 +46,8 @@ const fileBuffer = fs.readFileSync(path.join(__dirname, '/dist/index.json'))
 const fileJson = JSON.parse(fileBuffer)
 
 const expireTransaction = (hours) => {
-    const expire = new Date((new Date()).getTime() + hours * 60 * 60 * 1000); // expire n hours from now
-    return expire.toISOString().slice(0, -5); // remove milliseconds and 'Z' from ISO string
+    const expire = new Date((new Date()).getTime() + hours * 60 * 60 * 1000); // expire `n` hours from now
+    return expire.toISOString().slice(0, -5); // remove milliseconds and 'Z' char from ISO string
 }
 
 const makeid = (length) => {
@@ -110,7 +110,7 @@ const main = async () => {
                 }
             ],
             trx: {            
-                expiration: expireTransaction(1), // 3 days from now
+                expiration: expireTransaction(7), // 7 days from now
                 ref_block_num: 0,
                 ref_block_prefix: 0,
                 max_net_usage_words: 0,

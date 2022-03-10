@@ -19,7 +19,7 @@ const contractDeploymentBlockHeight = 7580000
 const pcsAddress = `0xAf1DB0c88a2Bd295F8EdCC8C73f9eB8BcEe6fA8a`
 const efxAddress = `0xC51Ef828319b131B595b7ec4B28210eCf4d05aD0`
 
-console.log(
+const txt =
 `
 ███████ ███████ ███████ ███████  ██████ ████████     ███    ██ ███████ ████████ ██     ██  ██████  ██████  ██   ██ 
 ██      ██      ██      ██      ██         ██        ████   ██ ██         ██    ██     ██ ██    ██ ██   ██ ██  ██  
@@ -27,7 +27,7 @@ console.log(
 ██      ██      ██      ██      ██         ██        ██  ██ ██ ██         ██    ██ ███ ██ ██    ██ ██   ██ ██  ██  
 ███████ ██      ██      ███████  ██████    ██        ██   ████ ███████    ██     ███ ███   ██████  ██   ██ ██   ██ 
 `
-)
+console.log(txt)
 
 const welcomeMessage = 
 `
