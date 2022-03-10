@@ -29,6 +29,19 @@ const argv = yargs(hideBin(process.argv))
     .argv
 
 /**
+ * Build Slack Client
+ */
+let slack;
+
+if (argv.slackapp) {
+    slack = new App({
+        signingSecret: argv.slacksecret,
+        token: argv.slackbot,
+        appToken: argv.slackapp
+    });
+}
+
+/**
  * Build EOS Client
  */
 const signatureProvider = new JsSignatureProvider([argv.privatekey]);
@@ -83,13 +96,12 @@ const actions = [{
 }];
 
 const main = async () => {
-
+    try {
         const serialized_actions = await api.serializeActions(actions).catch(error => {
             // TODO send error through slack notification slack
             console.error(error)
             throw error
         });
-        // console.log(`\nserialized_actions: ${JSON.stringify(serialized_actions)}\n`);
 
         // Specify the required agents for this multi-signature transactions
         const proposeInput = {
@@ -147,18 +159,10 @@ const main = async () => {
             }
             throw error
         });
-    
+
         console.log(`\nTransaction: ${JSON.stringify(transaction)}\n`)
 
         if (argv.slackapp) {
-            /**
-             * Build Slack Client
-             */
-            const slack = new App({
-                signingSecret: argv.slacksecret,
-                token: argv.slackbot,
-                appToken: argv.slackapp
-            });
 
             // send link to slack with transaction.transaction_id
             await slack.client.chat.postMessage({
@@ -184,7 +188,22 @@ const main = async () => {
                 // TODO send error through slack notification slack
                 console.log(error)
             });
-        }
+        }    
+
+    } catch (error) {
+        console.log(error)
+
+        await slack.client.chat.postMessage({
+            channel: '#test',
+            text: error
+        }).catch(slackerror => {
+            console.log(slackerror)
+        });
+
+        throw Error
+    }
+    
+}
 };
 
 main()
