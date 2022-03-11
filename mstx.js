@@ -131,7 +131,7 @@ const main = async () => {
                 }
             ],
             trx: {
-                expiration: expireTransaction(7), // 7 days from now
+                expiration: expireTransaction(168), // 7 days from now
                 ref_block_num: 0,
                 ref_block_prefix: 0,
                 max_net_usage_words: 0,
