@@ -64,13 +64,8 @@ const expireTransaction = (hours) => {
 }
 
 const makeid = (length) => {
-    var result           = '';
-    var characters       = 'abcdefghijklmnopqrstuvwxyz12345';
-    var charactersLength = characters.length;
-    for ( var i = 0; i < length; i++ ) {
-      result += characters.charAt(Math.floor(Math.random() *  charactersLength));
-   }
-   return result;
+    var characters       = 'abcdefghijklmnopqrstuvwxyz12345' // Allowed characters for EOS account name
+    return Array(length).fill().map(() => characters.charAt(Math.floor(Math.random() * characters.length))).join('')
 }
 
 const transactionName = makeid(6) //name for the tx
