@@ -6,6 +6,7 @@ on:
   push:
     branches:
       - main
+      
   # schedule:
   #   - cron: '00 9 * * *'
     # run this every fifteen minutes, every hour of every day
