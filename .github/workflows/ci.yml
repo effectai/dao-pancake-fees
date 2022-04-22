@@ -2,11 +2,11 @@ name: Run Calculation, Deploy and Commit.
 
 # For TESTING, REMEMBER to adjust expiration of tx in 
 # mstx.js :: main() :: proposeInput.trx.expiration
-on:
-  push:
-    branches:
-      - main
-      
+# on:
+#   push:
+#     branches:
+#       - main
+
   # schedule:
   #   - cron: '00 9 * * *'
     # run this every fifteen minutes, every hour of every day
@@ -14,9 +14,9 @@ on:
 # Official run time. DO NOT CHANGE
 # https://crontab.guru/#00_11_*_*_5
 # “At 11:00 on Friday.”
-# on:
-#   schedule:
-#     - cron: '00 11 * * 5'
+on:
+  schedule:
+    - cron: '00 11 * * 5'
 
 jobs:
   install:
